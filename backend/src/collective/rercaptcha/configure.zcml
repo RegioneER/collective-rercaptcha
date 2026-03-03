@@ -24,8 +24,9 @@
   <!-- -*- extra stuff goes here -*- -->
 
   <subscriber
-    for="Products.CMFCore.interfaces.ISiteRoot
-          zope.traversing.interfaces.IBeforeTraverseEvent"
-    handler="collective.rercaptcha.eventsubscribers.pre_traverse_check" />
+      for="Products.CMFCore.interfaces.ISiteRoot
+           zope.traversing.interfaces.IBeforeTraverseEvent"
+      handler="collective.rercaptcha.eventsubscribers.pre_traverse_check"
+      />
 
 </configure>

@@ -1,9 +1,11 @@
-import requests
-import os
+from collective.rercaptcha import _
 from zExceptions import Forbidden
 from zope.globalrequest import getRequest
 from zope.i18n import translate
-from collective.rercaptcha import _
+
+import logging
+import os
+import requests
 
 
 def get_environment_variable(variable_name, variable_desired_type=str):
@@ -16,7 +18,7 @@ def get_environment_variable(variable_name, variable_desired_type=str):
         msg = translate(
             _(
                 "missing_environ_variable",
-                default=f"The environment variable\'{variable_name}\' is missing"
+                default=f"The environment variable'{variable_name}' is missing"
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
@@ -49,7 +51,7 @@ def get_environment_variable(variable_name, variable_desired_type=str):
         msg = translate(
             _(
                 "not_bool_environ_variable",
-                default="The ambient variable is not a boolean value (0, 1, 'True', 'False', 'true', 'false')"
+                default="The ambient variable is not a boolean value"
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
@@ -59,7 +61,7 @@ def get_environment_variable(variable_name, variable_desired_type=str):
     return value
 
 
-def pre_traverse_check(object, event):
+def pre_traverse_check(obj, event):
     """Function that checks if requests satisfy the requirement of the captcha.
 
     Requests are blocked if:
@@ -89,11 +91,9 @@ def pre_traverse_check(object, event):
     if USE_RER_CAPTCHA is False:
         return
 
-    whitelisted_routes = set(whitelisted_routes
-                             .strip()
-                             .replace(",", " ")
-                             .replace("@", " ")
-                             .split())
+    whitelisted_routes = set(
+        whitelisted_routes.strip().replace(",", " ").replace("@", " ").split()
+    )
 
     # check if the action is not in the whitelisted routes
     action = event.request.get("ACTUAL_URL").split("/")[-1].lstrip("@")
@@ -105,7 +105,7 @@ def pre_traverse_check(object, event):
         msg = translate(
             _(
                 "no_capjs_token",
-                default="POST requests in the CAPTCHA_ENABLED_ACTIONS must provide 'capjs-token'"
+                default="POST requests must provide 'capjs-token'"
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
@@ -131,7 +131,9 @@ def pre_traverse_check(object, event):
     try:
         result = res.json()
     except requests.exceptions.JSONDecodeError:
-        import logging; logging.exception("%s %s, %s", res.url, {"secret": CAPJS_SECRET, "response": token}, res.text)
+        logging.exception(
+            "%s %s, %s", res.url, {"secret": CAPJS_SECRET, "response": token}, res.text
+        )
         result = {}
 
     # accepted request
@@ -141,10 +143,10 @@ def pre_traverse_check(object, event):
     # rejected request, blocked
     msg = translate(
         _(
-                "rer_capcha_failed",
-                default="Captcha service rejected the request"
-                "Please contact us if we are wrong.",
-            ),
+            "rer_capcha_failed",
+            default="Captcha service rejected the request"
+            "Please contact us if we are wrong.",
+        ),
         context=getRequest(),
     )
     raise Forbidden(msg)

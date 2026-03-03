@@ -1,0 +1,32 @@
+[repository]
+name = "collective-rercaptcha"
+changelog = "CHANGELOG.md"
+version = "version.txt"
+version_format = "calver"
+container_images_prefix = "ghcr.io/collective/collective-rercaptcha"
+compose = ["docker-compose.yml"]
+
+[repository.towncrier]
+section = "Project"
+settings = "towncrier.toml"
+
+[backend.package]
+name = "collective.rercaptcha"
+path = "backend"
+changelog = "backend/CHANGELOG.md"
+towncrier_settings = "backend/pyproject.toml"
+base_package = "Products.CMFPlone"
+publish = false
+
+[frontend.package]
+name = "volto-collective-rercaptcha"
+path = "frontend/packages/volto-collective-rercaptcha"
+changelog = "frontend/packages/volto-collective-rercaptcha/CHANGELOG.md"
+towncrier_settings = "frontend/packages/volto-collective-rercaptcha/towncrier.toml"
+base_package = "@plone/volto"
+publish = false
+
+[cookieplone]
+template = "project"
+template_version = "ca9ba9fa67bc9a824eab13962a63db230c93679e"
+generated_date = "2026-03-02 13:59:19"

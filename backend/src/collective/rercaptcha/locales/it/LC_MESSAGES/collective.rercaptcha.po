@@ -1,0 +1,70 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-03-03 10:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+
+#: collective/rercaptcha/profiles.zcml:22
+msgid "Create example content to showcase the new website"
+msgstr ""
+
+#: collective/rercaptcha/profiles.zcml:13
+msgid "Package to configure a new collective-rercaptcha site"
+msgstr ""
+
+#: collective/rercaptcha/profiles.zcml:30
+msgid "Uninstall collective-rercaptcha setup."
+msgstr ""
+
+#: collective/rercaptcha/profiles.zcml:22
+msgid "collective-rercaptcha: Example content"
+msgstr ""
+
+#: collective/rercaptcha/profiles.zcml:13
+msgid "collective-rercaptcha: Install"
+msgstr ""
+
+#: collective/rercaptcha/profiles.zcml:30
+msgid "collective-rercaptcha: Uninstall"
+msgstr ""
+
+#. Default: "Please contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:17
+msgid "missing_environ_variable"
+msgstr ""
+
+#. Default: "POST requests in the CAPTCHA_ENABLED_ACTIONS must provide 'capjs-token'Please contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:106
+#, fuzzy
+msgid "no_capjs_token"
+msgstr "Le richieste POST devono fornire il token 'capjs-token'"
+
+#. Default: "The ambient variable is not a boolean value (0, 1, 'True', 'False', 'true', 'false')Please contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:50
+msgid "not_bool_environ_variable"
+msgstr ""
+
+#. Default: "The environment variable is not castable at intPlease contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:34
+msgid "not_int_environ_variable"
+msgstr ""
+
+#. Default: "Error in the captcha service responsePlease contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:122
+msgid "rer_capcha_error"
+msgstr "Errore nella chiamata al servizio captcha"
+
+#. Default: "Captcha service rejected the requestPlease contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:143
+msgid "rer_capcha_failed"
+msgstr ""

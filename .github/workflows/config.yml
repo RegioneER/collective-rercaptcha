@@ -6,7 +6,7 @@ on:
       image-name-prefix:
         required: false
         type: string
-        default: "ghcr.io/collective/collective-rercaptcha"
+        default: "ghcr.io/RegioneER/collective-rercaptcha"
       node-version:
         required: false
         type: string

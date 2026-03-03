@@ -3,7 +3,7 @@ name = "collective-rercaptcha"
 changelog = "CHANGELOG.md"
 version = "version.txt"
 version_format = "calver"
-container_images_prefix = "ghcr.io/collective/collective-rercaptcha"
+container_images_prefix = "ghcr.io/RegioneER/collective-rercaptcha"
 compose = ["docker-compose.yml"]
 
 [repository.towncrier]

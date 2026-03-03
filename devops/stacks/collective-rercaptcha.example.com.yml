@@ -68,7 +68,7 @@ services:
       - nw-internal
 
   frontend:
-    image: ghcr.io/collective/collective-rercaptcha-frontend:${STACK_PARAM:-latest}
+    image: ghcr.io/RegioneER/collective-rercaptcha-frontend:${STACK_PARAM:-latest}
     environment:
       RAZZLE_INTERNAL_API_PATH: http://backend:8080/Plone
       RAZZLE_API_PATH: https://collective-rercaptcha.example.com
@@ -98,7 +98,7 @@ services:
         - traefik.http.routers.rt-frontend.middlewares=gzip
 
   backend:
-    image: ghcr.io/collective/collective-rercaptcha-backend:${STACK_PARAM:-latest}
+    image: ghcr.io/RegioneER/collective-rercaptcha-backend:${STACK_PARAM:-latest}
     volumes:
       - vol-site-data:/data
     networks:

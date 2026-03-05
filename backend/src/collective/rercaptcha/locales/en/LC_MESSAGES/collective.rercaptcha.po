@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-03-03 10:27+0000\n"
+"POT-Creation-Date: 2026-03-04 08:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,32 +38,32 @@ msgstr ""
 msgid "collective-rercaptcha: Uninstall"
 msgstr ""
 
-#. Default: "Please contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:17
+#. Default: "The environment variable is missingPlease contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:19
 msgid "missing_environ_variable"
 msgstr ""
 
-#. Default: "POST requests in the CAPTCHA_ENABLED_ACTIONS must provide 'capjs-token'Please contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:106
+#. Default: "POST requests must provide 'capjs-token'Please contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:107
 msgid "no_capjs_token"
 msgstr ""
 
-#. Default: "The ambient variable is not a boolean value (0, 1, 'True', 'False', 'true', 'false')Please contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:50
+#. Default: "The ambient variable is not a boolean valuePlease contact us if we are wrong."
+#: collective/rercaptcha/eventsubscribers.py:52
 msgid "not_bool_environ_variable"
 msgstr ""
 
 #. Default: "The environment variable is not castable at intPlease contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:34
+#: collective/rercaptcha/eventsubscribers.py:36
 msgid "not_int_environ_variable"
 msgstr ""
 
 #. Default: "Error in the captcha service responsePlease contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:122
+#: collective/rercaptcha/eventsubscribers.py:123
 msgid "rer_capcha_error"
 msgstr ""
 
 #. Default: "Captcha service rejected the requestPlease contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:143
+#: collective/rercaptcha/eventsubscribers.py:146
 msgid "rer_capcha_failed"
 msgstr ""

@@ -2,63 +2,10 @@ from collective.rercaptcha import _
 from zExceptions import Forbidden
 from zope.globalrequest import getRequest
 from zope.i18n import translate
-
+from plone import api
 import logging
-import os
 import requests
-
-
-def get_environment_variable(variable_name, variable_desired_type=str):
-    """Utility that retrieve the value of an environment variable.
-    If the variable is not defined or is not of the desired type an error is thrown."""
-
-    value = os.environ.get(variable_name)
-
-    if value is None:
-        msg = translate(
-            _(
-                "missing_environ_variable",
-                default=f"The environment variable'{variable_name}' is missing"
-                "Please contact us if we are wrong.",
-            ),
-            context=getRequest(),
-        )
-        raise Forbidden(msg)
-
-    if variable_desired_type is str:
-        return str(value)
-
-    if variable_desired_type is int:
-        try:
-            value = int(value)
-        except ValueError:
-            msg = translate(
-                _(
-                    "not_int_environ_variable",
-                    default="The environment variable is not castable at int"
-                    "Please contact us if we are wrong.",
-                ),
-                context=getRequest(),
-            )
-            raise Forbidden(msg) from None
-        return value
-
-    if variable_desired_type is bool:
-        if value == "False" or value == "false" or value == 0:
-            return False
-        if value == "True" or value == "true" or value == 1:
-            return True
-        msg = translate(
-            _(
-                "not_bool_environ_variable",
-                default="The ambient variable is not a boolean value"
-                "Please contact us if we are wrong.",
-            ),
-            context=getRequest(),
-        )
-        raise Forbidden(msg)
-
-    return value
+from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 
 
 def pre_traverse_check(obj, event):
@@ -69,31 +16,43 @@ def pre_traverse_check(obj, event):
     - are POST requests containing the 'capjs-token' but are rejected by the capjs
       service.
 
-    This function needs some environment variables:
-    - USE_RER_CAPTCHA: a boolean value that enables the checks
-    - CAPJS_INTERNAL_URL: the url of the capjs service (ex. http://capjs:3000)
-    - CAPJS_SITE_KEY e CAPJS_SECRET: ???
-    - CAPTCHA_ENABLED_ACTIONS: a list of ruote actions where the captcha check is active
+    This function needs some registry variables:
+    - use_captcha: a boolean value that enables the checks
+    - captcha_uri: the url of the capjs service (ex. http://capjs:3000)
+    - captcha_site_key e captcha_secret: ???
+    - whitelisted_routes: a list of routes where the captcha check is active
+                          (last part of URLs, comma separated)
     """
 
     # only POST requests are checked
     if getattr(event.request, "REQUEST_METHOD", "") != "POST":
         return
 
-    # obtain environment variables
-    USE_RER_CAPTCHA = get_environment_variable("USE_RER_CAPTCHA", str)
-    CAPJS_INTERNAL_URL = get_environment_variable("CAPJS_INTERNAL_URL", str)
-    CAPJS_SITE_KEY = get_environment_variable("SITE_KEY", str)
-    CAPJS_SECRET = get_environment_variable("SECRET_KEY", str)
-    whitelisted_routes = get_environment_variable("CAPTCHA_ENABLED_ACTIONS", str)
+    use_captcha = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="use_captcha"
+    )
 
     # CAPTCHA checks must be enabled
-    if USE_RER_CAPTCHA is False:
+    if use_captcha is False:
         return
 
-    whitelisted_routes = set(
-        whitelisted_routes.strip().replace(",", " ").replace("@", " ").split()
+    captcha_uri = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_uri"
     )
+    captcha_site_key = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_site_key"
+    )
+    captcha_secret = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_secret"
+    )
+    whitelisted_routes = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="whitelisted_routes"
+    )
+
+    whitelisted_routes = {
+        whitelisted_route.strip().replace(",", "").replace("@", "")
+        for whitelisted_route in whitelisted_routes
+    }
 
     # check if the action is not in the whitelisted routes
     action = event.request.get("ACTUAL_URL").split("/")[-1].lstrip("@")
@@ -105,7 +64,7 @@ def pre_traverse_check(obj, event):
         msg = translate(
             _(
                 "no_capjs_token",
-                default="POST requests must provide 'capjs-token'"
+                default="POST requests must provide 'capjs-token'. "
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
@@ -113,15 +72,15 @@ def pre_traverse_check(obj, event):
         raise Forbidden(msg)
 
     res = requests.post(
-        f"{CAPJS_INTERNAL_URL}/{CAPJS_SITE_KEY}/siteverify",
-        data={"secret": CAPJS_SECRET, "response": token},
+        f"{captcha_uri}/{captcha_site_key}/siteverify",
+        data={"secret": captcha_secret, "response": token},
         timeout=5,
     )
     if not res:
         msg = translate(
             _(
                 "rer_capcha_error",
-                default="Error in the captcha service response"
+                default="Error in the captcha service response. "
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
@@ -132,7 +91,10 @@ def pre_traverse_check(obj, event):
         result = res.json()
     except requests.exceptions.JSONDecodeError:
         logging.exception(
-            "%s %s, %s", res.url, {"secret": CAPJS_SECRET, "response": token}, res.text
+            "%s %s, %s",
+            res.url,
+            {"secret": captcha_secret, "response": token},
+            res.text,
         )
         result = {}
 
@@ -144,7 +106,7 @@ def pre_traverse_check(obj, event):
     msg = translate(
         _(
             "rer_capcha_failed",
-            default="Captcha service rejected the request"
+            default="Captcha service rejected the request. "
             "Please contact us if we are wrong.",
         ),
         context=getRequest(),

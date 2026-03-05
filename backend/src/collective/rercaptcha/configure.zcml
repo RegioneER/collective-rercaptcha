@@ -28,5 +28,10 @@
            zope.traversing.interfaces.IBeforeTraverseEvent"
       handler="collective.rercaptcha.eventsubscribers.pre_traverse_check"
       />
+    
+  <adapter
+      factory=".expanders.RerCaptchaExpander"
+      name="rercaptcha-data"
+      />
 
 </configure>

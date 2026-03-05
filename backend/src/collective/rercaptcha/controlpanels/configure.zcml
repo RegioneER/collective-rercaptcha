@@ -2,9 +2,17 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone"
-    i18n_domain="collective.rercaptcha"
-    >
+    i18n_domain="collective.rercaptcha">
+
 
   <!-- -*- extra stuff goes here -*- -->
+  
+  <browser:page
+      class=".controlpanel.RerCaptchaSettingsControlPanel"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      layer="collective.rercaptcha.interfaces.IBrowserLayer"
+      name="rercaptcha-controlpanel"
+      permission="collective.rercaptcha.ManageRerCaptchaSettings"
+  />
 
 </configure>

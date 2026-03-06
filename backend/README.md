@@ -1,10 +1,45 @@
 # collective.rercaptcha
 
-Integration with rercaptcha in Plone
+Integration with captcha validator in Plone
 
 ## Features
 
-TODO: List our awesome features
+This project implements an event subscriber that catch every IBeforeTraverseEvent event and an expander for using the functionality from the frontend.
+
+In order to be checked by the captcha service, a request:
+- has to be a POST request
+- has to be included in a list (configurable from the controlpanel)
+
+The custom frontend form will send a request to an eternal captcha valdidator service and recieve a token that will be sent to the backend with all the POST payload.
+The backend will then verify the legitimacy of the request by checking the same external service for a confirmation.
+
+All requests that are not POST will not be checked.
+All POST requests that are not on the configurable list will not be checked.
+All POST requests on the list that don't have the token in the payload will be blocked.
+All POST requests on the list that have a token not validated by the external service will be blocked.
+
+### Configuration
+
+A custom controlpanel is added for easy configurability:
+- `use_captcha`, a boolean value that enables the checks
+- `captcha_uri`, the url to the external validator
+- `whitelisted_routes`, the routes (last portions of urls) that will be subject to the validator.
+- `captcha_site_key` and `captcha_secret`, used during the validator phase in the backend, in the shape shown below:
+
+```python
+requests.post(
+    f"{captcha_uri}/{captcha_site_key}/siteverify",
+    data={"secret": captcha_secret, "response": token})
+```
+
+every custom form that implements this service will have to read the custom expander:
+```python
+"rercaptcha-data": {
+    "@id": ...,
+    "captcha-url": captcha_uri,
+    "captcha-site-key": captcha_site_key,
+}
+```
 
 ## Installation
 

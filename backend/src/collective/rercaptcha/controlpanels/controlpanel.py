@@ -10,7 +10,8 @@ class IRerCaptchaSettings(IControlpanel):
         title=_("use_captcha", default="Use Captcha"),
         description=_(
             "use_captcha_description",
-            default="Whether to use the captcha service or not. If false, the captcha will be not used and the requests will not be blocked.",
+            default="Whether to use the captcha service or not. If false, the captcha"
+            "will be not used and the requests will not be blocked.",
         ),
         required=False,
         default=False,
@@ -20,7 +21,8 @@ class IRerCaptchaSettings(IControlpanel):
         title=_("captcha_uri", default="Captcha URI"),
         description=_(
             "captcha_uri_description",
-            default="The URI of the captcha service to use. For example: https://www.google.com/recaptcha/api/siteverify",
+            default="The URI of the captcha service to use."
+            "For example: https://www.google.com/recaptcha/api/siteverify",
         ),
         required=False,
     )
@@ -47,7 +49,8 @@ class IRerCaptchaSettings(IControlpanel):
         title=_("whitelisted_routes", default="Whitelisted Routes"),
         description=_(
             "whitelisted_routes_description",
-            default="List of routes that are allowed to use the captcha service. For example: @foo",
+            default="List of routes that are allowed to use the captcha service."
+            "For example: @foo",
         ),
         required=False,
         value_type=schema.TextLine(),

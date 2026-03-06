@@ -6,6 +6,9 @@ from plone import api
 import logging
 import requests
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
+from plone.restapi.deserializer import json_body
+from plone.restapi.exceptions import DeserializationError
+from zExceptions import BadRequest
 
 
 def pre_traverse_check(obj, event):
@@ -60,6 +63,13 @@ def pre_traverse_check(obj, event):
         return
 
     token = event.request.form.get("capjs-token")
+
+    if not token:
+        try:
+            token = json_body(event.request).get("capjs-token")
+        except DeserializationError as err:
+            raise BadRequest(str(err)) from None
+
     if not token:
         msg = translate(
             _(

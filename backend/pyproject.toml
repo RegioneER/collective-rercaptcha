@@ -3,8 +3,8 @@ name = "collective.rercaptcha"
 dynamic = ["version"]
 description = "Integration with rercaptcha in Plone"
 readme = "README.md"
-license = "GPL-2.0-only"
-requires-python = ">=3.12"
+license = { text = "GPL-2.0-only" }
+requires-python = ">=3.11"
 authors = [
     { name = "RedTurtle Technology", email = "sviluppo@redturtle.it" },
 ]
@@ -22,10 +22,10 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "Products.CMFPlone==6.1.4",
     "plone.api",
     "plone.restapi",
     "plone.volto",
@@ -61,6 +61,12 @@ path = "src/collective/rercaptcha/__init__.py"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.dynamic]
+version = {attr = "collective.rercaptcha.__version__"}
 
 [tool.hatch.build]
 strict-naming = true

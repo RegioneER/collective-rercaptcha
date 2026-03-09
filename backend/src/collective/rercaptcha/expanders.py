@@ -5,6 +5,7 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 from plone.dexterity.interfaces import IDexterityContent
 from plone import api
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
+from collective.rercaptcha.eventsubscribers import is_captcha_enabled
 
 
 @implementer(IExpandableElement)
@@ -16,15 +17,22 @@ class RerCaptchaExpander:
 
     def __call__(self, expand=False):
 
+        if not is_captcha_enabled():
+            return {}
+
         captcha_uri = api.portal.get_registry_record(
             interface=IRerCaptchaSettings, name="captcha_uri"
         )
         captcha_site_key = api.portal.get_registry_record(
             interface=IRerCaptchaSettings, name="captcha_site_key"
         )
+
+        if not captcha_uri or not captcha_site_key:
+            return {}
+
         return {
             "rercaptcha-data": {
                 "@id": f"{self.context.absolute_url()}/@rercaptcha-data",
-                "captcha-url": f"{captcha_uri}/{captcha_site_key}",
+                "captcha-url": f"{captcha_uri.rstrip('/')}/{captcha_site_key}",
             }
         }

@@ -36,6 +36,23 @@ def get_captcha_token(request):
     return token
 
 
+# def is_request_accepted_by_captcha(request):
+#     try:
+#         result = res.json()
+#     except requests.exceptions.JSONDecodeError:
+#         logging.exception(
+#             "%s %s, %s",
+#             res.url,
+#             {"secret": captcha_secret, "response": token},
+#             res.text,
+#         )
+#         result = {}
+
+#     # accepted request
+#     if result.get("success"):
+# return
+
+
 def pre_traverse_check(obj, event):
     """Function that checks if requests satisfy the requirement of the captcha.
 

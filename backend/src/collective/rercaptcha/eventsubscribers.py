@@ -31,12 +31,17 @@ def pre_traverse_check(obj, event):
     if getattr(event.request, "REQUEST_METHOD", "") != "POST":
         return
 
-    use_captcha = api.portal.get_registry_record(
-        interface=IRerCaptchaSettings, name="use_captcha"
-    )
+    try:
+        use_captcha = api.portal.get_registry_record(
+            interface=IRerCaptchaSettings, name="use_captcha", default=False
+        )
+    except KeyError:
+        # This error can happen if the registry record is not set,
+        # for example if the addon is not properly installed.
+        return
 
     # CAPTCHA checks must be enabled
-    if use_captcha is False:
+    if not use_captcha:
         return
 
     captcha_uri = api.portal.get_registry_record(

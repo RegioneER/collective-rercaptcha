@@ -36,21 +36,36 @@ def get_captcha_token(request):
     return token
 
 
-# def is_request_accepted_by_captcha(request):
-#     try:
-#         result = res.json()
-#     except requests.exceptions.JSONDecodeError:
-#         logging.exception(
-#             "%s %s, %s",
-#             res.url,
-#             {"secret": captcha_secret, "response": token},
-#             res.text,
-#         )
-#         result = {}
+def is_result_accepted_by_captcha(result, captcha_secret, token):
+    """Utility function to check if a request is accepted by the captcha service."""
 
-#     # accepted request
-#     if result.get("success"):
-# return
+    if not result:
+        msg = translate(
+            _(
+                "rer_capcha_error",
+                default="Error in the captcha service response. "
+                "Please contact us if we are wrong.",
+            ),
+            context=getRequest(),
+        )
+        raise Forbidden(msg)
+
+    try:
+        json_result = result.json()
+    except requests.exceptions.JSONDecodeError:
+        logging.exception(
+            "%s %s, %s",
+            result.url,
+            {"secret": captcha_secret, "response": token},
+            result.text,
+        )
+        json_result = {}
+
+    # accepted request
+    if json_result.get("success"):
+        return True
+
+    return False
 
 
 def pre_traverse_check(obj, event):
@@ -69,6 +84,10 @@ def pre_traverse_check(obj, event):
                           (last part of URLs, comma separated)
     """
 
+    if event.request.method != "POST":
+        # we only check POST requests
+        return
+
     # CAPTCHA checks must be enabled
     if not is_captcha_enabled():
         return
@@ -85,6 +104,14 @@ def pre_traverse_check(obj, event):
     whitelisted_routes = api.portal.get_registry_record(
         interface=IRerCaptchaSettings, name="whitelisted_routes"
     )
+
+    if not captcha_uri or not captcha_site_key or not captcha_secret:
+        # if the registry is not properly configured, we do not block any request
+        return
+
+    if not whitelisted_routes:
+        # if no whitelisted routes are set, we do not block any request
+        return
 
     whitelisted_routes = {
         whitelisted_route.strip().replace(",", "").replace("@", "")
@@ -114,39 +141,16 @@ def pre_traverse_check(obj, event):
         data={"secret": captcha_secret, "response": token},
         timeout=5,
     )
-    if not res:
+
+    if not is_result_accepted_by_captcha(res, captcha_secret, token):
+
+        # rejected request, blocked
         msg = translate(
             _(
-                "rer_capcha_error",
-                default="Error in the captcha service response. "
+                "rer_capcha_failed",
+                default="Captcha service rejected the request. "
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
         )
         raise Forbidden(msg)
-
-    try:
-        result = res.json()
-    except requests.exceptions.JSONDecodeError:
-        logging.exception(
-            "%s %s, %s",
-            res.url,
-            {"secret": captcha_secret, "response": token},
-            res.text,
-        )
-        result = {}
-
-    # accepted request
-    if result.get("success"):
-        return
-
-    # rejected request, blocked
-    msg = translate(
-        _(
-            "rer_capcha_failed",
-            default="Captcha service rejected the request. "
-            "Please contact us if we are wrong.",
-        ),
-        context=getRequest(),
-    )
-    raise Forbidden(msg)

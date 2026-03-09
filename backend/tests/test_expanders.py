@@ -41,9 +41,7 @@ def test_expander_with_full_data(functional):
     assert "rercaptcha-data" in result
     assert "@id" in result["rercaptcha-data"]
     assert "captcha-url" in result["rercaptcha-data"]
-    assert "captcha-site-key" in result["rercaptcha-data"]
-    assert result["rercaptcha-data"]["captcha-url"] == "http://mysite.com"
-    assert result["rercaptcha-data"]["captcha-site-key"] == "xxxx"
+    assert result["rercaptcha-data"]["captcha-url"] == "http://mysite.com/xxxx"
 
 
 @pytest.mark.functional
@@ -83,7 +81,7 @@ def test_expander_with_api_request(functional):
     assert obj["@components"]["rercaptcha-data"]
 
     assert "@id" in obj["@components"]["rercaptcha-data"]
-    assert "captcha-site-key" in obj["@components"]["rercaptcha-data"]
     assert "captcha-url" in obj["@components"]["rercaptcha-data"]
-    assert obj["@components"]["rercaptcha-data"]["captcha-url"] == "http://mysite.com"
-    assert obj["@components"]["rercaptcha-data"]["captcha-site-key"] == "xxxx"
+    assert (
+        obj["@components"]["rercaptcha-data"]["captcha-url"] == "http://mysite.com/xxxx"
+    )

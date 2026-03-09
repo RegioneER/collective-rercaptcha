@@ -54,6 +54,7 @@ class IRerCaptchaSettings(IControlpanel):
         ),
         required=False,
         value_type=schema.TextLine(),
+        default=[],
     )
 
 

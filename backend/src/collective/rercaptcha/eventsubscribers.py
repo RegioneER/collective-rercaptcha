@@ -11,6 +11,31 @@ from plone.restapi.exceptions import DeserializationError
 from zExceptions import BadRequest
 
 
+def is_captcha_enabled():
+    """Utility function to check if the captcha is enabled in the registry."""
+    try:
+        return api.portal.get_registry_record(
+            interface=IRerCaptchaSettings, name="use_captcha", default=False
+        )
+    except KeyError:
+        # This error can happen if the registry record is not set,
+        # for example if the addon is not properly installed.
+        return False
+
+
+def get_captcha_token(request):
+    """Utility function to get the captcha token from the request."""
+    token = request.form.get("capjs-token")
+
+    if not token:
+        try:
+            token = json_body(request).get("capjs-token")
+        except DeserializationError as err:
+            raise BadRequest(str(err)) from None
+
+    return token
+
+
 def pre_traverse_check(obj, event):
     """Function that checks if requests satisfy the requirement of the captcha.
 
@@ -27,21 +52,8 @@ def pre_traverse_check(obj, event):
                           (last part of URLs, comma separated)
     """
 
-    # only POST requests are checked
-    if getattr(event.request, "REQUEST_METHOD", "") != "POST":
-        return
-
-    try:
-        use_captcha = api.portal.get_registry_record(
-            interface=IRerCaptchaSettings, name="use_captcha", default=False
-        )
-    except KeyError:
-        # This error can happen if the registry record is not set,
-        # for example if the addon is not properly installed.
-        return
-
     # CAPTCHA checks must be enabled
-    if not use_captcha:
+    if not is_captcha_enabled():
         return
 
     captcha_uri = api.portal.get_registry_record(
@@ -67,13 +79,7 @@ def pre_traverse_check(obj, event):
     if action not in whitelisted_routes:
         return
 
-    token = event.request.form.get("capjs-token")
-
-    if not token:
-        try:
-            token = json_body(event.request).get("capjs-token")
-        except DeserializationError as err:
-            raise BadRequest(str(err)) from None
+    token = get_captcha_token(event.request)
 
     if not token:
         msg = translate(

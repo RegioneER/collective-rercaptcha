@@ -25,7 +25,6 @@ class RerCaptchaExpander:
         return {
             "rercaptcha-data": {
                 "@id": f"{self.context.absolute_url()}/@rercaptcha-data",
-                "captcha-url": captcha_uri,
-                "captcha-site-key": captcha_site_key,
+                "captcha-url": f"{captcha_uri}/{captcha_site_key}",
             }
         }

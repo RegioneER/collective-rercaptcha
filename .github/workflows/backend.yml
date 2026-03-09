@@ -32,6 +32,7 @@ jobs:
       python-version: ${{ inputs.python-version }}
       plone-version: ${{ inputs.plone-version }}
       working-directory: ${{ inputs.working-directory }}
+      version-check-python: "latest --only pyproject.toml"
 
   test:
     name: "Backend: Test"

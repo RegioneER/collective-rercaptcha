@@ -1,11 +1,10 @@
-from zope import schema
 from collective.rercaptcha import _
 from plone.app.registry.browser import controlpanel
 from plone.restapi.controlpanels.interfaces import IControlpanel
+from zope import schema
 
 
 class IRerCaptchaSettings(IControlpanel):
-
     use_captcha = schema.Bool(
         title=_("use_captcha", default="Use Captcha"),
         description=_(
@@ -59,7 +58,6 @@ class IRerCaptchaSettings(IControlpanel):
 
 
 class RerCaptchaSettingsForm(controlpanel.RegistryEditForm):
-
     schema = IRerCaptchaSettings
     label = _("rercaptcha_settings_label", default="RerCaptcha Settings")
     description = _(

@@ -1,11 +1,11 @@
+from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
+from collective.rercaptcha.eventsubscribers import is_captcha_enabled
+from plone import api
+from plone.dexterity.interfaces import IDexterityContent
 from plone.restapi.interfaces import IExpandableElement
 from zope.component import adapter
 from zope.interface import implementer
 from zope.publisher.interfaces.browser import IBrowserRequest
-from plone.dexterity.interfaces import IDexterityContent
-from plone import api
-from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
-from collective.rercaptcha.eventsubscribers import is_captcha_enabled
 
 
 @implementer(IExpandableElement)

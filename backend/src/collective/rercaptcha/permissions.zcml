@@ -1,16 +1,17 @@
 <configure
-  xmlns="http://namespaces.zope.org/zope"
-  xmlns:zcml="http://namespaces.zope.org/zcml"
-  i18n_domain="plone">
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="plone"
+    >
 
   <!-- -*- extra stuff goes here -*- -->
 
   <configure zcml:condition="installed AccessControl.security">
-    
+
     <permission
-          id="collective.rercaptcha.ManageRerCaptchaSettings"
-          title="collective.rercaptcha: Manage RerCaptcha Settings"
-      />
+        id="collective.rercaptcha.ManageRerCaptchaSettings"
+        title="collective.rercaptcha: Manage RerCaptcha Settings"
+        />
 
   </configure>
 

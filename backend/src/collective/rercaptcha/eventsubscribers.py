@@ -1,14 +1,15 @@
 from collective.rercaptcha import _
-from zExceptions import Forbidden
-from zope.globalrequest import getRequest
-from zope.i18n import translate
-from plone import api
-import logging
-import requests
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
+from plone import api
 from plone.restapi.deserializer import json_body
 from plone.restapi.exceptions import DeserializationError
 from zExceptions import BadRequest
+from zExceptions import Forbidden
+from zope.globalrequest import getRequest
+from zope.i18n import translate
+
+import logging
+import requests
 
 
 def is_captcha_enabled():
@@ -61,11 +62,7 @@ def is_result_accepted_by_captcha(result, captcha_secret, token):
         )
         json_result = {}
 
-    # accepted request
-    if json_result.get("success"):
-        return True
-
-    return False
+    return bool(json_result.get("success"))
 
 
 def pre_traverse_check(obj, event):
@@ -143,7 +140,6 @@ def pre_traverse_check(obj, event):
     )
 
     if not is_result_accepted_by_captcha(res, captcha_secret, token):
-
         # rejected request, blocked
         msg = translate(
             _(

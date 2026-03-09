@@ -1,9 +1,10 @@
-import pytest
-from plone.restapi.testing import RelativeSession
-from plone import api
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
-import transaction
+from plone import api
+from plone.restapi.testing import RelativeSession
+
+import pytest
 import requests_mock
+import transaction
 
 
 @pytest.mark.functional
@@ -103,7 +104,6 @@ def test_token_validation_accepted(functional):
     transaction.commit()
 
     with requests_mock.Mocker(real_http=True) as m:
-
         m.register_uri(
             "POST",
             "http://mysite.com/xxxx/siteverify",
@@ -148,7 +148,6 @@ def test_token_validation_rejected(functional):
     transaction.commit()
 
     with requests_mock.Mocker(real_http=True) as m:
-
         m.register_uri(
             "POST",
             "http://mysite.com/xxxx/siteverify",

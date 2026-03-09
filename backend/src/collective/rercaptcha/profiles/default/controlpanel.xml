@@ -5,17 +5,17 @@
 
   <!-- -*- extra stuff goes here -*- -->
 
-  <configlet
-        title="RerCaptcha Settings"
-        action_id="RerCaptchaSettings"
-        appId="collective.rercaptcha"
-        category="Products"
-        condition_expr=""
-        url_expr="string:${portal_url}/@@rercaptcha-settings"
-        icon_expr=""
-        visible="True"
-        i18n:attributes="title">
-        <permission>collective.rercaptcha: Manage RerCaptcha Settings</permission>
-    </configlet>
+  <configlet action_id="RerCaptchaSettings"
+             appId="collective.rercaptcha"
+             category="Products"
+             condition_expr=""
+             icon_expr=""
+             title="RerCaptcha Settings"
+             url_expr="string:${portal_url}/@@rercaptcha-settings"
+             visible="True"
+             i18n:attributes="title"
+  >
+    <permission>collective.rercaptcha: Manage RerCaptcha Settings</permission>
+  </configlet>
 
 </object>

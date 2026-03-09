@@ -11,7 +11,7 @@
       class=".controlpanel.RerCaptchaSettingsControlPanel"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       layer="collective.rercaptcha.interfaces.IBrowserLayer"
-      name="rercaptcha-controlpanel"
+      name="rercaptcha-settings"
       permission="collective.rercaptcha.ManageRerCaptchaSettings"
   />
 

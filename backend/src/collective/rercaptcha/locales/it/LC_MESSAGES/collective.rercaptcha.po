@@ -41,7 +41,7 @@ msgstr ""
 #. Default: "The environment variable is missingPlease contact us if we are wrong."
 #: collective/rercaptcha/eventsubscribers.py:19
 msgid "missing_environ_variable"
-msgstr ""
+msgstr "La variabile d'ambiente non è stata trovata"
 
 #. Default: "POST requests must provide 'capjs-token'Please contact us if we are wrong."
 #: collective/rercaptcha/eventsubscribers.py:107
@@ -52,12 +52,12 @@ msgstr "Le richieste POST devono fornire il token 'capjs-token'"
 #. Default: "The ambient variable is not a boolean valuePlease contact us if we are wrong."
 #: collective/rercaptcha/eventsubscribers.py:52
 msgid "not_bool_environ_variable"
-msgstr ""
+msgstr "La variabile d'ampiente non è booleana"
 
 #. Default: "The environment variable is not castable at intPlease contact us if we are wrong."
 #: collective/rercaptcha/eventsubscribers.py:36
 msgid "not_int_environ_variable"
-msgstr ""
+msgstr "La variabile d'ambiente non è un intero"
 
 #. Default: "Error in the captcha service responsePlease contact us if we are wrong."
 #: collective/rercaptcha/eventsubscribers.py:123
@@ -67,4 +67,4 @@ msgstr "Errore nella chiamata al servizio captcha"
 #. Default: "Captcha service rejected the requestPlease contact us if we are wrong."
 #: collective/rercaptcha/eventsubscribers.py:146
 msgid "rer_capcha_failed"
-msgstr ""
+msgstr "Il servizio captcha ha rifuitato la richiesta"

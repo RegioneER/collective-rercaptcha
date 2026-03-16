@@ -1,15 +1,15 @@
+import logging
+
+import requests
 from collective.rercaptcha import _
-from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
+from collective.rercaptcha.controlpanels.controlpanel import \
+    IRerCaptchaSettings
 from plone import api
 from plone.restapi.deserializer import json_body
 from plone.restapi.exceptions import DeserializationError
-from zExceptions import BadRequest
-from zExceptions import Forbidden
+from zExceptions import BadRequest, Forbidden
 from zope.globalrequest import getRequest
 from zope.i18n import translate
-
-import logging
-import requests
 
 
 def is_captcha_enabled():
@@ -34,11 +34,40 @@ def get_captcha_token(request):
         except DeserializationError as err:
             raise BadRequest(str(err)) from None
 
+    if not token:
+        msg = translate(
+            _(
+                "no_capjs_token",
+                default="POST requests must provide 'capjs-token'. "
+                "Please contact us if we are wrong.",
+            ),
+            context=getRequest(),
+        )
+        raise Forbidden(msg)
+
     return token
 
 
-def is_result_accepted_by_captcha(result, captcha_secret, token):
+def is_valid_rercaptcha(event):
     """Utility function to check if a request is accepted by the captcha service."""
+
+    token = get_captcha_token(event.request)
+
+    captcha_uri = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_uri"
+    )
+    captcha_site_key = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_site_key"
+    )
+    captcha_secret = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_secret"
+    )
+
+    result = requests.post(
+        f"{captcha_uri}/{captcha_site_key}/siteverify",
+        data={"secret": captcha_secret, "response": token},
+        timeout=5,
+    )
 
     if not result:
         msg = translate(
@@ -50,6 +79,13 @@ def is_result_accepted_by_captcha(result, captcha_secret, token):
             context=getRequest(),
         )
         raise Forbidden(msg)
+
+    captcha_secret = api.portal.get_registry_record(
+        interface=IRerCaptchaSettings, name="captcha_secret"
+    )
+    if not captcha_secret:
+        # if the registry is not properly configured, we do not block any request
+        return True
 
     try:
         json_result = result.json()
@@ -120,26 +156,7 @@ def pre_traverse_check(obj, event):
     if action not in whitelisted_routes:
         return
 
-    token = get_captcha_token(event.request)
-
-    if not token:
-        msg = translate(
-            _(
-                "no_capjs_token",
-                default="POST requests must provide 'capjs-token'. "
-                "Please contact us if we are wrong.",
-            ),
-            context=getRequest(),
-        )
-        raise Forbidden(msg)
-
-    res = requests.post(
-        f"{captcha_uri}/{captcha_site_key}/siteverify",
-        data={"secret": captcha_secret, "response": token},
-        timeout=5,
-    )
-
-    if not is_result_accepted_by_captcha(res, captcha_secret, token):
+    if not is_valid_rercaptcha(event):
         # rejected request, blocked
         msg = translate(
             _(

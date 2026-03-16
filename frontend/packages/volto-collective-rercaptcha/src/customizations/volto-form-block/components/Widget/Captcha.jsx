@@ -108,20 +108,20 @@ class Captcha extends React.Component {
           <RenderErrorMessage />
         </>
       );
-      // } else if (captcha === 'honeypot') {
-      //   return (
-      //     <>
-      //       <HoneypotCaptchaWidget
-      //         id={captcha_props.id}
-      //         title={captcha_props.id}
-      //         captchaRef={captchaRef}
-      //         captchaToken={captchaToken}
-      //         onChangeFormData={onChangeFormData}
-      //       />
-      //       <RenderErrorMessage />
-      //     </>
-      //   );
     } else if (captcha === 'honeypot') {
+      return (
+        <>
+          <HoneypotCaptchaWidget
+            id={captcha_props.id}
+            title={captcha_props.id}
+            captchaRef={captchaRef}
+            captchaToken={captchaToken}
+            onChangeFormData={onChangeFormData}
+          />
+          <RenderErrorMessage />
+        </>
+      );
+    } else if (captcha === 'rercaptcha') {
       return (
         <>
           <RerCaptchaWidget

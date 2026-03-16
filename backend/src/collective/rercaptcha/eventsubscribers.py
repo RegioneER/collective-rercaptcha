@@ -2,8 +2,7 @@ import logging
 
 import requests
 from collective.rercaptcha import _
-from collective.rercaptcha.controlpanels.controlpanel import \
-    IRerCaptchaSettings
+from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from plone import api
 from plone.restapi.deserializer import json_body
 from plone.restapi.exceptions import DeserializationError

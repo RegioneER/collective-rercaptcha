@@ -1,5 +1,4 @@
-from collective.rercaptcha.controlpanels.controlpanel import \
-    IRerCaptchaSettings
+from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from collective.rercaptcha.eventsubscribers import is_captcha_enabled
 from plone import api
 from plone.dexterity.interfaces import IDexterityContent

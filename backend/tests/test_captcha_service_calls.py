@@ -1,8 +1,7 @@
 import pytest
 import requests_mock
 import transaction
-from collective.rercaptcha.controlpanels.controlpanel import \
-    IRerCaptchaSettings
+from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from plone import api
 from plone.restapi.testing import RelativeSession
 

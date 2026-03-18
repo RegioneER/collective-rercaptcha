@@ -61,7 +61,7 @@ const RerCaptchaWidget = (props) => {
       id: id,
       value: value,
     };
-    return JSON.stringify(token);
+    return token;
   };
 
   /**

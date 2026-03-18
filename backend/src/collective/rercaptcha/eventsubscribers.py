@@ -25,7 +25,7 @@ def is_captcha_enabled():
 
 def get_captcha_token(request):
     """Utility function to get the captcha token from the request."""
-    token = request.form.get("capjs-token")
+    token = request['token']["value"] if request['token'] else None
 
     if not token:
         try:
@@ -47,10 +47,10 @@ def get_captcha_token(request):
     return token
 
 
-def is_valid_rercaptcha(event):
+def is_valid_rercaptcha(request):
     """Utility function to check if a request is accepted by the captcha service."""
 
-    token = get_captcha_token(event.request)
+    token = get_captcha_token(request)
 
     captcha_uri = api.portal.get_registry_record(
         interface=IRerCaptchaSettings, name="captcha_uri"

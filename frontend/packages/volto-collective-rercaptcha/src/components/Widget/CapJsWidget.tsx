@@ -44,21 +44,6 @@ interface RerCapWidgetProps {
   workerCount?: number;
 }
 
-interface Data {
-  '@components': {
-    'rercaptcha-data': {
-      '@id': string;
-      'captcha-url': string;
-    };
-  };
-}
-
-interface State extends DefaultRootState {
-  content: {
-    data: Data;
-  };
-}
-
 /**
  * RerCapWidget: Componente invisibile (Headless) per la gestione del Captcha PoW.
  *
@@ -74,20 +59,6 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
   onReset,
   workerCount,
 }) => {
-  const rerCaptchaData =
-    useSelector(
-      (state: State) =>
-        state.content?.data?.['@components']?.['rercaptcha-data'],
-    ) || null;
-
-  if (!rerCaptchaData) {
-    console.warn(
-      'RerCapWidget - Dati rercaptcha non disponibili nel Redux store',
-    );
-    return null; // Se i dati non sono disponibili, non faccio nulla
-  }
-
-  console.log(rerCaptchaData);
   // solvingRef: impedisce l'avvio di calcoli multipli contemporanei nello stesso componente
   const solvingRef = useRef<boolean>(false);
 

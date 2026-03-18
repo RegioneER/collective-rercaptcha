@@ -6,7 +6,7 @@ import {
   HoneypotCaptchaWidget,
 } from 'volto-form-block/components/Widget';
 
-import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/RerCaptchaWidget';
+import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
 
 class Captcha extends React.Component {
   constructor(props) {
@@ -31,10 +31,7 @@ class Captcha extends React.Component {
     const captchaRef = this.captchaRef;
     if (captcha === 'recaptcha') {
       return captchaRef.current.verify();
-    } else if (captcha === 'hcaptcha') {
-      if (!captchaToken.current)
-        return captchaRef.current.execute({ async: true });
-    } else if (captcha === 'hcaptcha_invisible') {
+    } else if (captcha === 'hcaptcha' || captcha === 'hcaptcha_invisible') {
       if (!captchaToken.current)
         return captchaRef.current.execute({ async: true });
     }
@@ -133,7 +130,7 @@ class Captcha extends React.Component {
           ></RerCaptchaWidget>
           {/* RenderErrorMessage is usually handled inside RerCaptchaWidget for PoW, 
               but we keep the standard behavior of the block form here as well 
-              if you prefer to have the double check. */}
+             */}
           <RenderErrorMessage />
         </>
       );

@@ -1,6 +1,5 @@
-import RerCapWidget from './RerCapWidget';
-import RerCapField from './RerCapField';
+import RerCapWidget from './Widget/CapJsWidget';
 import { CaptchaTestView, CaptchaTestEdit } from './Blocks';
 
-export { RerCapWidget, RerCapField, CaptchaTestView, CaptchaTestEdit };
+export { RerCapWidget, CaptchaTestView, CaptchaTestEdit };
 export default RerCapWidget;

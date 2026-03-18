@@ -5,7 +5,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, type DefaultRootState } from 'react-redux';
-import RerCapWidget from 'volto-collective-rercaptcha/components/RerCapWidget';
+import RerCapWidget from 'volto-collective-rercaptcha/components/Widget/CapJsWidget';
+import { useIntl, defineMessages } from 'react-intl';
+
+const messages = defineMessages({
+  captchaError: {
+    id: 'rercaptcha_error',
+    defaultMessage: 'Errore nella verifica del captcha',
+  },
+});
 
 interface Data {
   '@components': {
@@ -23,12 +31,8 @@ interface State extends DefaultRootState {
 }
 
 /**
- * RerCaptchaWidget: Wrapper per integrare il captcha PoW (SHA-256) nei form di Volto.
- *
- * SCELTE TECNICHE:
- * 1. Integrazione con volto-form-block: Utilizza il sistema di validazione basato su ref
- *    (captchaToken) per bloccare il submit finché il calcolo non è completato.
- * 2. Gestione degli errori: Visualizza errorMessage passato da Volto per feedback di validazione.
+ * RerCaptchaWidget: Wrapper per integrare il captcha PoW nei form di Volto.
+ * Implementa forwardRef per permettere il reset manuale dall'esterno.
  */
 const RerCaptchaWidget = (props) => {
   const { id, captchaToken, onChangeFormData, errorMessage } = props;
@@ -38,28 +42,26 @@ const RerCaptchaWidget = (props) => {
         state.content?.data?.['@components']?.['rercaptcha-data'],
     ) || null;
 
-  if (!rerCaptchaData) {
-    console.warn(
-      'RerCapWidget - Dati rercaptcha non disponibili nel Redux store',
-    );
-    return null; // Se i dati non sono disponibili, non faccio nulla
-  }
-
   const [isSolving, setIsSolving] = useState(true);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
+  const intl = useIntl();
 
   // Garantisce che l'inizializzazione del campo avvenga una sola volta al mount
   const initializedRef = useRef(false);
 
   // Endpoint API
-  const endpoint = rerCaptchaData['captcha-url'];
+  const endpoint = rerCaptchaData?.['captcha-url'];
 
   /**
    * Formatta il token per il backend di Plone.
    */
   const createToken = (id, value) => {
-    return JSON.stringify({ id, value });
+    const token = {
+      id: id,
+      value: value,
+    };
+    return JSON.stringify(token);
   };
 
   /**
@@ -75,29 +77,34 @@ const RerCaptchaWidget = (props) => {
       }
 
       // Segnaliamo a Volto che il campo è inizialmente vuoto
-      setTimeout(() => {
-        onChangeFormData(id, id, '', { label: id });
-      }, 0);
+
+      onChangeFormData(id, id, '', { label: id });
     }
   }, [id, captchaToken, onChangeFormData]);
 
+  if (!rerCaptchaData) {
+    console.warn(
+      'RerCapWidget - Dati rercaptcha non disponibili nel Redux store',
+    );
+    return null;
+  }
+
   return (
     <div className="rercap-widget-container" id={`field-${id}`}>
-      {/* Motore invisibile PoW */}
       <RerCapWidget
         endpoint={endpoint}
         onProgress={(p) => setProgress(p)}
-        onSolve={(t) => {
+        onSolve={(value) => {
           setIsSolving(false);
           setError(null);
 
           // Sblocchiamo il form impostando il token nel ref
           if (captchaToken) {
-            captchaToken.current = createToken(id, t);
+            captchaToken.current = createToken(id, value);
           }
 
           // Aggiorniamo il valore nel payload del form
-          onChangeFormData(id, id, t, { label: id });
+          onChangeFormData(id, id, value, { label: id });
         }}
         onError={(err) => {
           setIsSolving(false);
@@ -109,7 +116,7 @@ const RerCaptchaWidget = (props) => {
       />
 
       {/* Messaggio di stato durante il calcolo */}
-      {isSolving && (
+      {/*       {isSolving && (
         <div
           className="rercap-status-info"
           style={{
@@ -121,7 +128,7 @@ const RerCaptchaWidget = (props) => {
         >
           Verifica di sicurezza in corso: {Math.round(progress)}%
         </div>
-      )}
+      )} */}
 
       {/* Messaggi di errore (tecnici o di validazione Volto) */}
       {(error || errorMessage) && (
@@ -129,7 +136,9 @@ const RerCaptchaWidget = (props) => {
           className="rercap-error-info"
           style={{ fontSize: '0.9em', color: '#db2828', marginTop: '5px' }}
         >
-          {error ? `Errore tecnico: ${error}` : errorMessage}
+          {error
+            ? `${intl.formatMessage(messages.captchaError)}: ${error}`
+            : errorMessage}
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import {
   HCaptchaWidget,
   NoRobotsCaptchaWidget,
   HoneypotCaptchaWidget,
+  // eslint-disable-next-line import/no-unresolved
 } from 'volto-form-block/components/Widget';
 
 import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';

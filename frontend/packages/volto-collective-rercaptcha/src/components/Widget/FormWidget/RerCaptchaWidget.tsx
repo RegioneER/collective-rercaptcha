@@ -42,7 +42,9 @@ const RerCaptchaWidget = (props) => {
         state.content?.data?.['@components']?.['rercaptcha-data'],
     ) || null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isSolving, setIsSolving] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const intl = useIntl();
@@ -83,6 +85,7 @@ const RerCaptchaWidget = (props) => {
   }, [id, captchaToken, onChangeFormData]);
 
   if (!rerCaptchaData) {
+    // eslint-disable-next-line no-console
     console.warn(
       'RerCapWidget - Dati rercaptcha non disponibili nel Redux store',
     );

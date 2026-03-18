@@ -29,6 +29,7 @@
   "addons": [],
   "theme": "",
   "peerDependencies": {
+    "volto-form-block": "3.17.1",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0"
   },

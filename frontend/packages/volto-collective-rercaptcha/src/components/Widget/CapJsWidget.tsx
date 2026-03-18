@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector, type DefaultRootState } from 'react-redux';
 // Importazione della classe Cap (motore principale PoW)
 import Cap from '@cap.js/widget';
 // Importazione dei tipi per garantire la type-safety durante lo sviluppo
@@ -118,6 +117,7 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
             }
           })
           .catch((err: Error) => {
+            // eslint-disable-next-line no-console
             console.error('RerCapWidget - Errore durante solve():', err);
             onError?.(
               err?.message || 'Errore tecnico durante il calcolo del captcha',
@@ -128,6 +128,7 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
             solvingRef.current = false;
           });
       } catch (err: any) {
+        // eslint-disable-next-line no-console
         console.error('RerCapWidget - Errore critico inizializzazione:', err);
         solvingRef.current = false;
         onError?.(

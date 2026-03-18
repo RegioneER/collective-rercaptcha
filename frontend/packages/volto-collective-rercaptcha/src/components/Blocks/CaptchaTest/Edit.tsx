@@ -26,7 +26,7 @@ interface CaptchaTestEditProps {
  *
  * SCELTE TECNICHE:
  * - Uso di SidebarPortal per inserire la configurazione nella barra laterale di Volto.
- * - Sostituzione di Semantic UI con classi standard Volto (field, segment, group) 
+ * - Sostituzione di Semantic UI con classi standard Volto (field, segment, group)
  *   per evitare problemi di tipizzazione JSX complessi.
  */
 const Edit: React.FC<CaptchaTestEditProps> = (props) => {
@@ -62,8 +62,12 @@ const Edit: React.FC<CaptchaTestEditProps> = (props) => {
                 placeholder="https://captcha.gurl.eu.org/api/"
                 onChange={handleEndpointChange}
               />
-              <p className="help-text" style={{ fontSize: '0.9em', color: '#666', marginTop: '5px' }}>
-                Inserisci l'URL dell'API del servizio captcha che genera la sfida SHA-256.
+              <p
+                className="help-text"
+                style={{ fontSize: '0.9em', color: '#666', marginTop: '5px' }}
+              >
+                Inserisci l'URL dell'API del servizio captcha che genera la
+                sfida SHA-256.
               </p>
             </div>
           </div>

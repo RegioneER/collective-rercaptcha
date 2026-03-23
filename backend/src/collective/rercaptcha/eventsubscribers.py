@@ -25,7 +25,7 @@ def is_captcha_enabled():
 
 def get_captcha_token(request):
     """Utility function to get the captcha token from the request."""
-    token = request['token']["value"] if request['token'] else None
+    token = request["token"]["value"] if request["token"] else None
 
     if not token:
         try:
@@ -62,11 +62,16 @@ def is_valid_rercaptcha(request):
         interface=IRerCaptchaSettings, name="captcha_secret"
     )
 
+    captcha_uri = captcha_uri.rstrip("/")
+
     result = requests.post(
         f"{captcha_uri}/{captcha_site_key}/siteverify",
-        data={"secret": captcha_secret, "response": token},
+        json={"secret": captcha_secret, "response": token},
         timeout=5,
     )
+
+    breakpoint()
+    result.raise_for_status()
 
     if not result:
         msg = translate(

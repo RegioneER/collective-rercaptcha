@@ -4,15 +4,16 @@ import requests
 from collective.rercaptcha import _
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from plone import api
-from plone.restapi.deserializer import json_body
-from plone.restapi.exceptions import DeserializationError
 from zExceptions import BadRequest, Forbidden
 from zope.globalrequest import getRequest
 from zope.i18n import translate
+from requests.exceptions import HTTPError
+from plone.restapi.exceptions import DeserializationError
+from plone.restapi.deserializer import json_body
 
 
 def is_captcha_enabled():
-    """Utility function to check if the captcha is enabled in the registry."""
+    """Checks if the captcha is enabled in the registry."""
     try:
         return api.portal.get_registry_record(
             interface=IRerCaptchaSettings, name="use_captcha", default=False
@@ -24,15 +25,8 @@ def is_captcha_enabled():
 
 
 def get_captcha_token(request):
-    """Utility function to get the captcha token from the request."""
+    """Gets the captcha token from the request."""
     token = request["token"]["value"] if request["token"] else None
-
-    if not token:
-        try:
-            token = json_body(request).get("capjs-token")
-        except DeserializationError as err:
-            raise BadRequest(str(err)) from None
-
     if not token:
         msg = translate(
             _(
@@ -43,14 +37,11 @@ def get_captcha_token(request):
             context=getRequest(),
         )
         raise Forbidden(msg)
-
     return token
 
 
-def is_valid_rercaptcha(request):
-    """Utility function to check if a request is accepted by the captcha service."""
-
-    token = get_captcha_token(request)
+def is_valid_rercaptcha_token(token):
+    """Utility function to check if a token is accepted by the captcha service."""
 
     captcha_uri = api.portal.get_registry_record(
         interface=IRerCaptchaSettings, name="captcha_uri"
@@ -64,16 +55,21 @@ def is_valid_rercaptcha(request):
 
     captcha_uri = captcha_uri.rstrip("/")
 
-    result = requests.post(
+    response = requests.post(
         f"{captcha_uri}/{captcha_site_key}/siteverify",
-        json={"secret": captcha_secret, "response": token},
+        data={"secret": captcha_secret, "response": token},
         timeout=5,
     )
 
-    breakpoint()
-    result.raise_for_status()
+    try:
+        response.raise_for_status()
+    except HTTPError as error:
+        raise BadRequest(
+            "Error in the response fron the captcha service "
+            f"(status {response.status_code})"
+        ) from error
 
-    if not result:
+    if response.status_code != 200:
         msg = translate(
             _(
                 "rer_capcha_error",
@@ -92,17 +88,17 @@ def is_valid_rercaptcha(request):
         return True
 
     try:
-        json_result = result.json()
+        json_response = response.json()
     except requests.exceptions.JSONDecodeError:
         logging.exception(
             "%s %s, %s",
-            result.url,
+            response.url,
             {"secret": captcha_secret, "response": token},
-            result.text,
+            response.text,
         )
-        json_result = {}
+        json_response = {}
 
-    return bool(json_result.get("success"))
+    return bool(json_response.get("success"))
 
 
 def pre_traverse_check(obj, event):
@@ -160,7 +156,15 @@ def pre_traverse_check(obj, event):
     if action not in whitelisted_routes:
         return
 
-    if not is_valid_rercaptcha(event):
+    try:
+        token = json_body(event.request).get("capjs-token")
+    except DeserializationError as err:
+        raise BadRequest(str(err)) from None
+
+    if not token:
+        raise BadRequest("Error: the captcha token was not found.")
+
+    if not is_valid_rercaptcha_token(token):
         # rejected request, blocked
         msg = translate(
             _(

@@ -126,8 +126,6 @@ const messages = defineMessages({
 });
 
 const FeedbackForm = ({ title, pathname }) => {
-  console.log('ciao sono il feedback form e questo è il mio path', pathname);
-
   const intl = useIntl();
   const location = useLocation();
   const path = pathname ?? location.pathname ?? '/';
@@ -143,8 +141,6 @@ const FeedbackForm = ({ title, pathname }) => {
   const [validToken, setValidToken] = useState(null);
   const threshold = getFeedbackThreshold();
 
-  console.log(formData);
-
   const fieldHoney = __CLIENT__
     ? window.env.RAZZLE_HONEYPOT_FIELD
     : process.env.RAZZLE_HONEYPOT_FIELD;
@@ -155,9 +151,6 @@ const FeedbackForm = ({ title, pathname }) => {
     setSatisfaction(e);
   };
   const updateFormData = (field, value) => {
-    if (field === 'capjs-token') {
-      console.log('RerCaptcha: PoW risolto! Ricevuto token:', value);
-    }
     if (field === 'comment') {
       if (value?.length > 200) setInvalidForm(true);
       else setInvalidForm(false);
@@ -173,7 +166,6 @@ const FeedbackForm = ({ title, pathname }) => {
   };
   const getFormFieldValue = (field) => formData?.[field] ?? undefined;
   const currentVote = getFormFieldValue('vote');
-  console.log(currentVote);
 
   const nextStep = () => {
     if (!invalidForm) setStep(step + 1);
@@ -208,7 +200,7 @@ const FeedbackForm = ({ title, pathname }) => {
 
   // initialized honeypot field
   useEffect(() => {
-    if (fieldHoney) updateFormData(fieldHoney, '');
+    updateFormData(fieldHoney, '');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldHoney]);
 
@@ -244,10 +236,9 @@ const FeedbackForm = ({ title, pathname }) => {
   );
 
   const resetFormData = () => {
-    if (fieldHoney)
-      setFormData({
-        [fieldHoney]: '',
-      });
+    setFormData({
+      [fieldHoney]: '',
+    });
   };
 
   const sendFormData = () => {
@@ -260,20 +251,12 @@ const FeedbackForm = ({ title, pathname }) => {
     if (typeof content === 'object' && content.id)
       content = intl.formatMessage(content);
 
-    console.log(formData);
-
-    console.log('Feedback: Invio form con dati:', {
-      path,
-    });
-
     const data = {
       ...formData,
       ...(googleRecaptcha && { 'g-recaptcha-response': validToken }),
       answer: getTranslatedQuestion(intl, formData.answer),
       content,
     };
-
-    console.log('Feedback: Payload finale inviato:', data);
 
     dispatch(submitFeedback(data));
     resetFormData();

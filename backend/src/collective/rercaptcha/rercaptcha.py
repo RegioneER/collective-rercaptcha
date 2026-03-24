@@ -10,7 +10,7 @@ class RercaptchaSupport(CaptchaSupport):
     name = _("Rercaptcha Support")
 
     def isEnabled(self):
-        """to
+        """
         Rercaptcha is enabled with registry vars
         """
         return is_captcha_enabled()
@@ -18,16 +18,14 @@ class RercaptchaSupport(CaptchaSupport):
     def serialize(self):
         if not is_captcha_enabled():
             return {}
-
         return {"provider": "recaptcha"}
 
     def verify(self, data):
         token = data["token"]["value"] if "token" in data else None
-
         if not is_valid_rercaptcha_token(token):
             raise BadRequest(
                 translate(
-                    _("The code you entered was wrong, please enter the new one."),
+                    _("The token you entered was wrong."),
                     context=self.request,
                 )
             )

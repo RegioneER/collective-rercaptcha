@@ -10,7 +10,7 @@
              category="Products"
              condition_expr=""
              icon_expr=""
-             title="RerCaptcha Settings"
+             title="RerCaptcha"
              url_expr="string:${portal_url}/@@rercaptcha-settings"
              visible="True"
              i18n:attributes="title"

@@ -42,7 +42,7 @@ def get_captcha_token(request):
 
 
 def is_valid_rercaptcha_token(token):
-    """Utility function to check if a token is accepted by the captcha service."""
+    """Checks if a token is accepted by the captcha service."""
 
     captcha_uri = api.portal.get_registry_record(
         interface=IRerCaptchaSettings, name="captcha_uri"
@@ -84,8 +84,9 @@ def is_valid_rercaptcha_token(token):
     captcha_secret = api.portal.get_registry_record(
         interface=IRerCaptchaSettings, name="captcha_secret"
     )
+
+    # if the registry is not properly configured, we do not block any request
     if not captcha_secret:
-        # if the registry is not properly configured, we do not block any request
         return True
 
     try:
@@ -118,8 +119,8 @@ def pre_traverse_check(obj, event):
                           (last part of URLs, comma separated)
     """
 
+    # we only check POST requests
     if event.request.method != "POST":
-        # we only check POST requests
         return
 
     # CAPTCHA checks must be enabled
@@ -139,12 +140,12 @@ def pre_traverse_check(obj, event):
         interface=IRerCaptchaSettings, name="whitelisted_routes"
     )
 
+    # if the registry is not properly configured, we do not block any request
     if not captcha_uri or not captcha_site_key or not captcha_secret:
-        # if the registry is not properly configured, we do not block any request
         return
 
+    # if no whitelisted routes are set, we do not block any request
     if not whitelisted_routes:
-        # if no whitelisted routes are set, we do not block any request
         return
 
     whitelisted_routes = {
@@ -169,8 +170,8 @@ def pre_traverse_check(obj, event):
     if not token:
         raise BadRequest("Error: the captcha token was not found.")
 
+    # rejected request, blocked
     if not is_valid_rercaptcha_token(token):
-        # rejected request, blocked
         msg = translate(
             _(
                 "rer_captcha_failed",

@@ -1287,6 +1287,10 @@ importers:
       volto-form-block:
         specifier: 3.17.1
         version: 3.17.1(@plone/volto@18.32.2(@babel/runtime@7.28.6)(@popperjs/core@2.11.8)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-with-direction@1.4.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(seamless-immutable@7.1.4))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(volto-subblocks@2.1.0(@plone/volto@18.32.2(@babel/runtime@7.28.6)(@popperjs/core@2.11.8)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-with-direction@1.4.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(seamless-immutable@7.1.4))(react@18.2.0))
+    devDependencies:
+      '@plone/scripts':
+        specifier: ^3.6.2
+        version: 3.10.4(debug@4.3.2)
 
 packages:
 
@@ -20470,7 +20474,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 1.2.0
-      vitest: 2.1.9(@types/node@22.19.13)(@vitest/ui@2.1.9)(jsdom@22.1.0)(less@3.11.1)(lightningcss@1.31.1)(sass@1.97.3)(terser@5.46.0)
+      vitest: 2.1.9(@types/node@22.19.13)(@vitest/ui@2.1.9)(jsdom@21.1.2)(less@3.11.1)(lightningcss@1.31.1)(sass@1.97.3)(terser@5.46.0)
     optional: true
 
   '@vitest/ui@2.1.9(vitest@3.2.4)':

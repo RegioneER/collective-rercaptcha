@@ -30,6 +30,7 @@ import CommentsStep from './Steps/CommentsStep';
 import RTRating from './Steps/Commons/Rating';
 import { PropTypes } from 'prop-types';
 
+// eslint-disable-next-line import/no-unresolved
 import 'volto-feedback/components/FeedbackForm/feedback-form.css';
 
 const messages = defineMessages({
@@ -228,7 +229,7 @@ const FeedbackForm = ({ title, pathname }) => {
   const onVerifyCaptcha = useCallback(
     (token) => {
       if (satisfaction !== null && !validToken) {
-        console.log('GoogleReCaptcha: Token ricevuto:', token);
+        // console.log('GoogleReCaptcha: Token ricevuto:', token);
         setValidToken(token);
       }
     },

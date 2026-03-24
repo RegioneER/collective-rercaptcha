@@ -78,8 +78,6 @@ const RerCaptchaWidget = (props) => {
         captchaToken.current = null;
       }
 
-      // Segnaliamo a Volto che il campo è inizialmente vuoto
-
       onChangeFormData(id, id, '', { label: id });
     }
   }, [id, captchaToken, onChangeFormData]);

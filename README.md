@@ -2,7 +2,7 @@
 
 [![Built with Cookieplone](https://img.shields.io/badge/built%20with-Cookieplone-0083be.svg?logo=cookiecutter)](https://github.com/plone/cookieplone-templates/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![CI](https://github.com/collective/collective-rercaptcha/actions/workflows/main.yml/badge.svg)](https://github.com/collective/collective-rercaptcha/actions/workflows/main.yml)
+[![CI](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml/badge.svg)](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml)
 
 Integration with rercaptcha in Plone
 
@@ -24,7 +24,7 @@ Integration with rercaptcha in Plone
 1.  Clone this repository, then change your working directory.
 
     ```shell
-    git clone git@github.com:collective/collective-rercaptcha.git
+    git clone git@github.com:RegioneER/collective-rercaptcha.git
     cd collective-rercaptcha
     ```
 

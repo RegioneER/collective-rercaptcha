@@ -1,8 +1,9 @@
 """Init and utils."""
 
+from zope.i18nmessageid import MessageFactory
+
 import logging
 
-from zope.i18nmessageid import MessageFactory
 
 __version__ = "1.0.0a0"
 

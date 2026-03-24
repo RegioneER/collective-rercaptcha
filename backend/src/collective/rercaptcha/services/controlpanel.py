@@ -2,7 +2,8 @@ from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from collective.rercaptcha.interfaces import IBrowserLayer
 from plone.restapi.controlpanels import RegistryConfigletPanel
 from zope.component import adapter
-from zope.interface import Interface, implementer
+from zope.interface import implementer
+from zope.interface import Interface
 
 
 @adapter(Interface, IBrowserLayer)

@@ -1,15 +1,16 @@
-import logging
-
-import requests
 from collective.rercaptcha import _
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from plone import api
-from zExceptions import BadRequest, Forbidden
+from plone.restapi.deserializer import json_body
+from plone.restapi.exceptions import DeserializationError
+from requests.exceptions import HTTPError
+from zExceptions import BadRequest
+from zExceptions import Forbidden
 from zope.globalrequest import getRequest
 from zope.i18n import translate
-from requests.exceptions import HTTPError
-from plone.restapi.exceptions import DeserializationError
-from plone.restapi.deserializer import json_body
+
+import logging
+import requests
 
 
 def is_captcha_enabled():
@@ -159,7 +160,7 @@ def pre_traverse_check(obj, event):
     if getattr(event.request, "captcha_validated", False):
         # if the request has already been validated, we do not check it again
         return
-    
+
     try:
         token = json_body(event.request).get("capjs-token")
     except DeserializationError as err:
@@ -179,5 +180,5 @@ def pre_traverse_check(obj, event):
             context=getRequest(),
         )
         raise Forbidden(msg)
-    
+
     event.request.captcha_validated = True

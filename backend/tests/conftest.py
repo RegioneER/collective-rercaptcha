@@ -1,9 +1,8 @@
-from collective.rercaptcha.testing import (
-    ACCEPTANCE_TESTING,
-    FUNCTIONAL_TESTING,
-    INTEGRATION_TESTING,
-)
+from collective.rercaptcha.testing import ACCEPTANCE_TESTING
+from collective.rercaptcha.testing import FUNCTIONAL_TESTING
+from collective.rercaptcha.testing import INTEGRATION_TESTING
 from pytest_plone import fixtures_factory
+
 
 pytest_plugins = ["pytest_plone"]
 

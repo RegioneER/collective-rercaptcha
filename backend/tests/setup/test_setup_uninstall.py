@@ -1,5 +1,6 @@
-import pytest
 from collective.rercaptcha import PACKAGE_NAME
+
+import pytest
 
 
 class TestSetupUninstall:

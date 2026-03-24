@@ -1,11 +1,11 @@
-from unittest.mock import MagicMock
-
-import pytest
-import transaction
 from collective.rercaptcha.controlpanels.controlpanel import IRerCaptchaSettings
 from collective.rercaptcha.expanders import RerCaptchaExpander
 from plone import api
 from plone.restapi.testing import RelativeSession
+from unittest.mock import MagicMock
+
+import pytest
+import transaction
 
 
 @pytest.mark.functional

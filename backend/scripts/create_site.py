@@ -1,12 +1,15 @@
-import os
-
-import transaction
 from AccessControl.SecurityManagement import newSecurityManager
 from collective.rercaptcha.interfaces import IBrowserLayer
-from Products.CMFPlone.factory import _DEFAULT_PROFILE, addPloneSite
+from Products.CMFPlone.factory import _DEFAULT_PROFILE
+from Products.CMFPlone.factory import addPloneSite
 from Products.GenericSetup.tool import SetupTool
 from Testing.makerequest import makerequest
-from zope.interface import directlyProvidedBy, directlyProvides
+from zope.interface import directlyProvidedBy
+from zope.interface import directlyProvides
+
+import os
+import transaction
+
 
 truthy = frozenset(("t", "true", "y", "yes", "on", "1"))
 

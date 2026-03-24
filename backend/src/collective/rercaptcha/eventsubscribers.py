@@ -6,11 +6,15 @@ from plone.restapi.exceptions import DeserializationError
 from requests.exceptions import HTTPError
 from zExceptions import BadRequest
 from zExceptions import Forbidden
+from zope.annotation.interfaces import IAnnotations
 from zope.globalrequest import getRequest
 from zope.i18n import translate
 
 import logging
 import requests
+
+
+RER_CAPATCHA_ANNOTATION_KEY = "collective.rercaptcha.annotation"
 
 
 def is_captcha_enabled():
@@ -157,7 +161,9 @@ def pre_traverse_check(obj, event):
     if action not in whitelisted_routes:
         return
 
-    if getattr(event.request, "captcha_validated", False):
+    annotations = IAnnotations(event.request)
+
+    if annotations.get(RER_CAPATCHA_ANNOTATION_KEY):
         # if the request has already been validated, we do not check it again
         return
 
@@ -181,4 +187,4 @@ def pre_traverse_check(obj, event):
         )
         raise Forbidden(msg)
 
-    event.request.captcha_validated = True
+    annotations[RER_CAPATCHA_ANNOTATION_KEY] = True

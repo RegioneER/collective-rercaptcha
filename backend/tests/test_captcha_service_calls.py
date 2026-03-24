@@ -36,11 +36,8 @@ def test_request_without_token(functional):
 
     response = client.post("/@querystring-search")
 
-    assert response.status_code == 403
-    assert (
-        response.json().get("message")
-        == "POST requests must provide 'capjs-token'. Please contact us if we are wrong."
-    )
+    assert response.status_code == 400
+    assert response.json().get("message") == "Error: the captcha token was not found."
 
 
 @pytest.mark.functional

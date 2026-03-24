@@ -156,6 +156,10 @@ def pre_traverse_check(obj, event):
     if action not in whitelisted_routes:
         return
 
+    if getattr(event.request, "captcha_validated", False):
+        # if the request has already been validated, we do not check it again
+        return
+    
     try:
         token = json_body(event.request).get("capjs-token")
     except DeserializationError as err:
@@ -168,10 +172,12 @@ def pre_traverse_check(obj, event):
         # rejected request, blocked
         msg = translate(
             _(
-                "rer_capcha_failed",
+                "rer_captcha_failed",
                 default="Captcha service rejected the request. "
                 "Please contact us if we are wrong.",
             ),
             context=getRequest(),
         )
         raise Forbidden(msg)
+    
+    event.request.captcha_validated = True

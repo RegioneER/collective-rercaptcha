@@ -33,7 +33,6 @@ jobs:
       plone-version: ${{ inputs.plone-version }}
       working-directory: ${{ inputs.working-directory }}
       version-check-python: "latest --only pyproject.toml"
-
   test:
     name: "Backend: Test"
     uses: plone/meta/.github/workflows/backend-pytest.yml@2.x

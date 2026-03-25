@@ -1,7 +1,11 @@
+/* CUSTOMIZATIONS: 
+  - aggiunta del rercaptcha di collective-rercaptcha, che viene mostrato solo se l'utente ha espresso un voto
+*/
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useIntl, defineMessages } from 'react-intl';
+// eslint-disable-next-line no-restricted-imports
 import { isCmsUi } from '@plone/volto/helpers';
 import {
   Container,
@@ -23,11 +27,15 @@ import {
   isFeedbackEnabledForRoute,
   getStaticFeedbackRouteTitle,
 } from 'volto-feedback';
+// eslint-disable-next-line import/no-unresolved
 import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
 import cx from 'classnames';
-import AnswersStep from './Steps/AnswersStep';
-import CommentsStep from './Steps/CommentsStep';
-import RTRating from './Steps/Commons/Rating';
+// eslint-disable-next-line import/no-unresolved
+import AnswersStep from 'design-comuni-plone-theme/components/ItaliaTheme/customerSatisfaction/Steps/AnswersStep';
+// eslint-disable-next-line import/no-unresolved
+import CommentsStep from 'design-comuni-plone-theme/components/ItaliaTheme/customerSatisfaction/Steps/CommentsStep';
+// eslint-disable-next-line import/no-unresolved
+import RTRating from 'design-comuni-plone-theme/components/ItaliaTheme/customerSatisfaction/Steps/Commons/Rating';
 import { PropTypes } from 'prop-types';
 
 // eslint-disable-next-line import/no-unresolved
@@ -362,6 +370,7 @@ const FeedbackForm = ({ title, pathname }) => {
                         onVerify={onVerifyCaptcha}
                         action={action}
                       />
+                      {/* CUSTOMIZATIONS: render rercaptcha */}
                       {currentVote !== undefined && (
                         <RerCaptchaWidget
                           id={'capjs-token'}

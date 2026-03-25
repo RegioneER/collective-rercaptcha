@@ -16,4 +16,7 @@ msgstr ""
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
 
-
+#. Default: "Errore nella verifica del captcha"
+#: components/Widget/FormWidget/RerCaptchaWidget
+msgid "rercaptcha_error"
+msgstr ""

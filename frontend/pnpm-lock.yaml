@@ -18,7 +18,7 @@ importers:
       '@plone/volto':
         specifier: workspace:*
         version: link:core/packages/volto
-      volto-collective-rercaptcha:
+      '@regioneer/volto-collective-rercaptcha':
         specifier: workspace:*
         version: link:packages/volto-collective-rercaptcha
     devDependencies:

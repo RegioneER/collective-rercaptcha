@@ -23,7 +23,7 @@ PLONE_VERSION=6
 DOCKER_IMAGE=plone/server-dev:${PLONE_VERSION}
 DOCKER_IMAGE_ACCEPTANCE=plone/server-acceptance:${PLONE_VERSION}
 
-ADDON_NAME='volto-collective-rercaptcha'
+ADDON_NAME='@regioneer/volto-collective-rercaptcha'
 IMAGE_NAME=ghcr.io/RegioneER/collective-rercaptcha-frontend
 IMAGE_TAG=latest
 VOLTO_VERSION = $(shell cat ./mrs.developer.json | python -c "import sys, json; print(json.load(sys.stdin)['core']['tag'])")

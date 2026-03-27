@@ -2,7 +2,7 @@
 name = "collective-rercaptcha"
 changelog = "CHANGELOG.md"
 version = "version.txt"
-version_format = "calver"
+version_format = "semver"
 container_images_prefix = "ghcr.io/RegioneER/collective-rercaptcha"
 compose = ["docker-compose.yml"]
 
@@ -19,12 +19,12 @@ base_package = "Products.CMFPlone"
 publish = false
 
 [frontend.package]
-name = "volto-collective-rercaptcha"
+name = "@regioneer/volto-collective-rercaptcha"
 path = "frontend/packages/volto-collective-rercaptcha"
 changelog = "frontend/packages/volto-collective-rercaptcha/CHANGELOG.md"
 towncrier_settings = "frontend/packages/volto-collective-rercaptcha/towncrier.toml"
 base_package = "@plone/volto"
-publish = false
+publish = true
 
 [cookieplone]
 template = "project"

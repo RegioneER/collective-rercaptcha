@@ -29,7 +29,8 @@
   "addons": [],
   "theme": "",
   "devDependencies": {
-    "@plone/scripts": "^3.6.2"
+    "@plone/scripts": "^3.6.2",
+    "release-it": "^19.0.6"
   },
   "peerDependencies": {
     "design-react-kit": "5.0.0-1",

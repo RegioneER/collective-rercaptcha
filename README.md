@@ -143,6 +143,73 @@ Generate translation files for Plone and Volto with ease:
 make i18n
 ```
 
+## Release 📦
+
+To release a new version of this project, use the automated release process:
+
+```shell
+make release
+```
+
+### Prerequisites for Release
+
+Before running the release command, set up the required environment variables and authentication:
+
+#### 1. Set Environment Variables
+
+```bash
+# PyPI authentication
+export PYPI_TOKEN="your-pypi-token"
+
+# NPM authentication  
+export NPM_TOKEN="your-npm-token"
+
+# GitHub (optional, for creating releases)
+export GITHUB_TOKEN="your-github-token"
+```
+
+#### 2. Verify npm Authentication
+
+```bash
+npm whoami
+```
+
+If this fails, run:
+```bash
+npm login
+```
+
+### What the Release Process Does
+
+The `make release` command automatically:
+
+1. ✅ Verifies all required environment variables are set
+2. 🔧 Sets up Node.js 22 via `nvm`
+3. 🔐 Verifies npm authentication
+4. 📦 Installs frontend dependencies (`pnpm install`)
+5. 🚀 Runs `uvx repoplone release` to:
+   - Update version numbers in both backend and frontend
+   - Update CHANGELOG files
+   - Create git tags
+   - Publish to PyPI (backend) and npm (frontend)
+   - Create GitHub releases (if `GITHUB_TOKEN` is set)
+
+### Release Workflow
+
+The release process will ask you to select the next version:
+- `a` (alpha): for pre-release versions
+- `b` (beta): for beta versions  
+- `release`: for stable versions
+
+Then it will:
+1. Update repository components (version, CHANGELOG, etc.)
+2. Release the backend package to PyPI
+3. Release the frontend package to npm
+4. Create a git tag
+5. Create a GitHub release (if configured)
+
+**Note:** The process is fully automated once started. You only need to confirm the version selection at the beginning.
+
 ## Credits and acknowledgements 🙏
 
 Generated using [Cookieplone (0.9.10)](https://github.com/plone/cookieplone) and [cookieplone-templates (ca9ba9f)](https://github.com/plone/cookieplone-templates/commit/ca9ba9fa67bc9a824eab13962a63db230c93679e) on 2026-03-02 14:55:03.494498. A special thanks to all contributors and supporters!

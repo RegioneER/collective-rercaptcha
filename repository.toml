@@ -16,7 +16,7 @@ path = "backend"
 changelog = "backend/CHANGELOG.md"
 towncrier_settings = "backend/pyproject.toml"
 base_package = "Products.CMFPlone"
-publish = false
+publish = true
 
 [frontend.package]
 name = "@regioneer/volto-collective-rercaptcha"

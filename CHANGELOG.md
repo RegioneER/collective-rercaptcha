@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a4 (2026-03-30)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+
+#### Internal
+
+- Fix also publish on pypi. @cekk [##](https://github.com/collective/collective-rercaptcha/pull/#)
+
+
+
 ## 1.0.0a3 (2026-03-30)
 
 ### Backend

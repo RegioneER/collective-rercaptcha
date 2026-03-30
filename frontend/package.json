@@ -1,6 +1,6 @@
 {
   "name": "volto-collective-rercaptcha-dev",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.3",
   "description": "Integration with rercaptcha in Plone",
   "author": "RedTurtle Technology",
   "homepage": "https://github.com/collective/collective-rercaptcha",

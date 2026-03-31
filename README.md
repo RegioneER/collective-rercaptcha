@@ -159,10 +159,7 @@ Before running the release command, set up the required environment variables an
 
 ```bash
 # PyPI authentication
-export PYPI_TOKEN="your-pypi-token"
-
-# NPM authentication  
-export NPM_TOKEN="your-npm-token"
+export UV_PUBLISH_TOKEN="your-pypi-token"
 
 # GitHub (optional, for creating releases)
 export GITHUB_TOKEN="your-github-token"
@@ -183,9 +180,9 @@ npm login
 
 The `make release` command automatically:
 
-1. ✅ Verifies all required environment variables are set
-2. 🔧 Sets up Node.js 22 via `nvm`
-3. 🔐 Verifies npm authentication
+1. ✅ Verifies required environment variables are set
+2. 🔧 Sets up Node.js from `.nvmrc`
+3. 🔐 Verifies npm authentication (`npm whoami`)
 4. 📦 Installs frontend dependencies (`pnpm install`)
 5. 🚀 Runs `uvx repoplone release` to:
    - Update version numbers in both backend and frontend

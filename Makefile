@@ -134,7 +134,7 @@ test:  backend-test frontend-test ## Test codebase
 # Release
 ###########################################
 .PHONY: release
-release:  ## Release new version (requires PYPI_TOKEN and NPM_TOKEN)
+release:  ## Release new version (requires UV_PUBLISH_TOKEN and npm login)
 	@bash ./scripts/release.sh
 .PHONY: build-images
 build-images:  ## Build container images

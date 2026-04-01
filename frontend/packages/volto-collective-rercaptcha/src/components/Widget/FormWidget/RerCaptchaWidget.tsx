@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, type DefaultRootState } from 'react-redux';
-import RerCapWidget from 'volto-collective-rercaptcha/components/Widget/CapJsWidget';
+import RerCapWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/CapJsWidget';
 import { useIntl, defineMessages } from 'react-intl';
 
 const messages = defineMessages({

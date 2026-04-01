@@ -7,7 +7,7 @@ import {
   // eslint-disable-next-line import/no-unresolved
 } from 'volto-form-block/components/Widget';
 
-import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
 
 class Captcha extends React.Component {
   constructor(props) {

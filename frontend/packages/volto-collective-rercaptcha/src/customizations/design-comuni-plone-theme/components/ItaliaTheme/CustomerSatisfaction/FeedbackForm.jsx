@@ -28,14 +28,14 @@ import {
   getStaticFeedbackRouteTitle,
 } from 'volto-feedback';
 // eslint-disable-next-line import/no-unresolved
-import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
 import cx from 'classnames';
 // eslint-disable-next-line import/no-unresolved
-import AnswersStep from 'design-comuni-plone-theme/components/ItaliaTheme/customerSatisfaction/Steps/AnswersStep';
+import AnswersStep from 'design-comuni-plone-theme/components/ItaliaTheme/CustomerSatisfaction/Steps/AnswersStep';
 // eslint-disable-next-line import/no-unresolved
-import CommentsStep from 'design-comuni-plone-theme/components/ItaliaTheme/customerSatisfaction/Steps/CommentsStep';
+import CommentsStep from 'design-comuni-plone-theme/components/ItaliaTheme/CustomerSatisfaction/Steps/CommentsStep';
 // eslint-disable-next-line import/no-unresolved
-import RTRating from 'design-comuni-plone-theme/components/ItaliaTheme/customerSatisfaction/Steps/Commons/Rating';
+import RTRating from 'design-comuni-plone-theme/components/ItaliaTheme/CustomerSatisfaction/Steps/Commons/Rating';
 import { PropTypes } from 'prop-types';
 
 // eslint-disable-next-line import/no-unresolved

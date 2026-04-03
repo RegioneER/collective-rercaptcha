@@ -16,7 +16,7 @@
     "publish": false
   },
   "plonePrePublish": {
-    "publish": false
+    "publish": true
   },
   "git": {
     "changelog": "pipx run towncrier build --draft --yes --version 0.0.0",

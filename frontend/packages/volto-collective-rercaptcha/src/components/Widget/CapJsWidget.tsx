@@ -67,6 +67,27 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
   // capInstanceRef: memorizza l'istanza della classe Cap per poterla pulire o resettare al distacco (unmount)
   const capInstanceRef = useRef<Cap | null>(null);
 
+  // suppressResetRef: evita di propagare a onReset i reset che generiamo noi
+  // stessi durante il cleanup (altrimenti chi rimonta il widget su onReset
+  // entrerebbe in un loop infinito di calcoli)
+  const suppressResetRef = useRef<boolean>(false);
+
+  // Pattern "latest ref" per le callback: i consumatori le passano come arrow
+  // function inline (nuova identità a ogni render). Se fossero dipendenze
+  // dell'effect principale, ogni re-render del padre smonterebbe l'istanza Cap
+  // (cleanup → reset()), cancellando il timer di scadenza del token appena
+  // armato: il refresh automatico alla scadenza non scatterebbe mai.
+  const onSolveRef = useRef(onSolve);
+  const onErrorRef = useRef(onError);
+  const onProgressRef = useRef(onProgress);
+  const onResetRef = useRef(onReset);
+  useEffect(() => {
+    onSolveRef.current = onSolve;
+    onErrorRef.current = onError;
+    onProgressRef.current = onProgress;
+    onResetRef.current = onReset;
+  });
+
   useEffect(() => {
     // Il calcolo deve avvenire solo nel browser (lato client)
     if (typeof window === 'undefined') return;
@@ -90,17 +111,17 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
          * Registrazione degli Event Listener.
          * La libreria Cap emette eventi custom per il progresso e il reset.
          */
-        if (onProgress) {
-          cap.addEventListener('progress', (e: CapProgressEvent) => {
-            onProgress(e.detail.progress);
-          });
-        }
+        cap.addEventListener('progress', (e: CapProgressEvent) => {
+          onProgressRef.current?.(e.detail.progress);
+        });
 
-        if (onReset) {
-          cap.addEventListener('reset', () => {
-            onReset?.();
-          });
-        }
+        // L'evento 'reset' viene emesso da Cap anche alla scadenza del token
+        // (timer interno sulla base di resp.expires): lo propaghiamo al padre
+        // che può così richiedere un token nuovo
+        cap.addEventListener('reset', () => {
+          if (suppressResetRef.current) return;
+          onResetRef.current?.();
+        });
 
         /**
          * Metodo .solve(): Avvia effettivamente i WebWorkers e il calcolo SHA-256.
@@ -111,15 +132,17 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
           .then((result) => {
             if (result.success) {
               solvedRef.current = true;
-              onSolve(result.token); // Comunico il successo al componente padre
+              onSolveRef.current(result.token); // Comunico il successo al componente padre
             } else {
-              onError?.('Verifica captcha fallita (Risposta API negativa)');
+              onErrorRef.current?.(
+                'Verifica captcha fallita (Risposta API negativa)',
+              );
             }
           })
           .catch((err: Error) => {
             // eslint-disable-next-line no-console
             console.error('RerCapWidget - Errore durante solve():', err);
-            onError?.(
+            onErrorRef.current?.(
               err?.message || 'Errore tecnico durante il calcolo del captcha',
             );
           })
@@ -131,7 +154,7 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
         // eslint-disable-next-line no-console
         console.error('RerCapWidget - Errore critico inizializzazione:', err);
         solvingRef.current = false;
-        onError?.(
+        onErrorRef.current?.(
           err?.message || 'Impossibile inizializzare il motore captcha PoW',
         );
       }
@@ -144,11 +167,19 @@ const RerCapWidget: React.FC<RerCapWidgetProps> = ({
      */
     return () => {
       if (capInstanceRef.current) {
-        // reset() ferma i worker e pulisce lo stato interno dell'istanza
+        // reset() ferma i worker e pulisce lo stato interno dell'istanza.
+        // Sopprimiamo l'evento 'reset' generato da questa chiamata: non è una
+        // scadenza del token ma un cleanup nostro
+        suppressResetRef.current = true;
         capInstanceRef.current.reset();
+        suppressResetRef.current = false;
       }
     };
-  }, [endpoint, workerCount, onSolve, onError, onProgress, onReset]);
+    // Le callback sono volutamente escluse dalle dipendenze (vedi refs sopra):
+    // l'istanza Cap deve vivere per tutta la vita del componente, non essere
+    // ricreata a ogni re-render del padre
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endpoint, workerCount]);
 
   // Il componente è invisibile, non produce HTML
   return null;

@@ -1,4 +1,6 @@
 /* CUSTOMIZATIONS:
+  file originale: @redturtle/volto-newsletter v1.2.7 (src/views/Channel.jsx)
+
   - aggiunta del rercaptcha di collective-rercaptcha ai form di iscrizione e
     cancellazione della newsletter. Il token viene inviato nel body della POST
     come 'capjs-token' (validato lato backend dal pre_traverse_check di
@@ -31,7 +33,7 @@ import {
 // eslint-disable-next-line import/no-unresolved
 import HoneypotWidget from '@redturtle/volto-newsletter/views/HoneypotWidget/HoneypotWidget';
 // eslint-disable-next-line import/no-unresolved
-import RerCaptchaWidget from 'volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
 
 const messages = defineMessages({
   subscribe: {

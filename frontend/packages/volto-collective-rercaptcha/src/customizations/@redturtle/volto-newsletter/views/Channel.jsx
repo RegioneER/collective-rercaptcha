@@ -131,7 +131,7 @@ const Channel = ({ content, location }) => {
     useSelector(
       (state) => state.content?.data?.['@components']?.['rercaptcha-data'],
     ) || null;
-  const captchaEnabled = !!rerCaptchaData;
+  const rerCaptchaEnabled = !!rerCaptchaData;
 
   const [email, setEmail] = useState('');
   const [unsubEmail, setUnsubEmail] = useState('');
@@ -140,10 +140,10 @@ const Channel = ({ content, location }) => {
 
   /* CUSTOMIZATIONS: token rercaptcha e contatori di tentativi usati come key
      per rimontare il widget e ricalcolare un token dopo un submit fallito */
-  const [subCaptchaToken, setSubCaptchaToken] = useState('');
-  const [unsubCaptchaToken, setUnsubCaptchaToken] = useState('');
-  const [subCaptchaAttempt, setSubCaptchaAttempt] = useState(0);
-  const [unsubCaptchaAttempt, setUnsubCaptchaAttempt] = useState(0);
+  const [subRerCaptchaToken, setSubRerCaptchaToken] = useState('');
+  const [unsubRerCaptchaToken, setUnsubRerCaptchaToken] = useState('');
+  const [subRerCaptchaAttempt, setSubRerCaptchaAttempt] = useState(0);
+  const [unsubRerCaptchaAttempt, setUnsubRerCaptchaAttempt] = useState(0);
 
   const [sideMenuElements, setSideMenuElements] = useState(null);
   let documentBody = createRef();
@@ -158,9 +158,9 @@ const Channel = ({ content, location }) => {
     dispatch(
       subscribeNewsletter(path, {
         email,
-        [fieldHoney]: subHoney,
+        ...(fieldHoney && { [fieldHoney]: subHoney }),
         /* CUSTOMIZATIONS: token rercaptcha */
-        ...(captchaEnabled && { 'capjs-token': subCaptchaToken }),
+        ...(rerCaptchaEnabled && { 'capjs-token': subRerCaptchaToken }),
       }),
     );
   };
@@ -169,9 +169,9 @@ const Channel = ({ content, location }) => {
     dispatch(
       unsubscribeNewsletter(path, {
         email: unsubEmail,
-        [fieldHoney]: unsubHoney,
+        ...(fieldHoney && { [fieldHoney]: unsubHoney }),
         /* CUSTOMIZATIONS: token rercaptcha */
-        ...(captchaEnabled && { 'capjs-token': unsubCaptchaToken }),
+        ...(rerCaptchaEnabled && { 'capjs-token': unsubRerCaptchaToken }),
       }),
     );
   };
@@ -226,7 +226,7 @@ const Channel = ({ content, location }) => {
       toast.error(message);
       /* CUSTOMIZATIONS: il token è monouso, rimontiamo il widget per
          ricalcolarne uno nuovo in vista di un nuovo tentativo */
-      setSubCaptchaAttempt((attempt) => attempt + 1);
+      setSubRerCaptchaAttempt((attempt) => attempt + 1);
     }
   }, [subscribeError, intl]);
 
@@ -240,7 +240,7 @@ const Channel = ({ content, location }) => {
       toast.error(message);
       /* CUSTOMIZATIONS: il token è monouso, rimontiamo il widget per
          ricalcolarne uno nuovo in vista di un nuovo tentativo */
-      setUnsubCaptchaAttempt((attempt) => attempt + 1);
+      setUnsubRerCaptchaAttempt((attempt) => attempt + 1);
     }
   }, [unsubscribeError, intl]);
 
@@ -316,10 +316,10 @@ const Channel = ({ content, location }) => {
                       />
                       {/* CUSTOMIZATIONS: render rercaptcha */}
                       <RerCaptchaWidget
-                        key={`subscribe-captcha-${subCaptchaAttempt}`}
+                        key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
                         id={'capjs-token'}
                         onChangeFormData={(id, label, value) => {
-                          setSubCaptchaToken(value);
+                          setSubRerCaptchaToken(value);
                         }}
                       />
                       <Button
@@ -332,7 +332,7 @@ const Channel = ({ content, location }) => {
                           subscribeLoading ||
                           /* CUSTOMIZATIONS: submit bloccato finché il PoW non
                              ha prodotto il token */
-                          (captchaEnabled && !subCaptchaToken)
+                          (rerCaptchaEnabled && !subRerCaptchaToken)
                         }
                       >
                         <Icon
@@ -401,10 +401,10 @@ const Channel = ({ content, location }) => {
                     />
                     {/* CUSTOMIZATIONS: render rercaptcha */}
                     <RerCaptchaWidget
-                      key={`unsubscribe-captcha-${unsubCaptchaAttempt}`}
+                      key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}
                       id={'capjs-token'}
                       onChangeFormData={(id, label, value) => {
-                        setUnsubCaptchaToken(value);
+                        setUnsubRerCaptchaToken(value);
                       }}
                     />
                     <Button
@@ -417,7 +417,7 @@ const Channel = ({ content, location }) => {
                         unsubscribeLoading ||
                         /* CUSTOMIZATIONS: submit bloccato finché il PoW non
                            ha prodotto il token */
-                        (captchaEnabled && !unsubCaptchaToken)
+                        (rerCaptchaEnabled && !unsubRerCaptchaToken)
                       }
                     >
                       <Icon

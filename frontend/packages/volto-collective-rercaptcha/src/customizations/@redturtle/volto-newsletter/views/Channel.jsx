@@ -308,12 +308,14 @@ const Channel = ({ content, location }) => {
                           messages.subscribeNewsletterLabel,
                         )}
                       />
-                      <HoneypotWidget
-                        updateFormData={(_, value) => {
-                          setSubHoney(value);
-                        }}
-                        field={fieldHoney}
-                      />
+                      {fieldHoney && (
+                        <HoneypotWidget
+                          updateFormData={(_, value) => {
+                            setSubHoney(value);
+                          }}
+                          field={fieldHoney}
+                        />
+                      )}
                       {/* CUSTOMIZATIONS: render rercaptcha */}
                       <RerCaptchaWidget
                         key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
@@ -393,12 +395,14 @@ const Channel = ({ content, location }) => {
                         messages.unsubscribeNewsletterLabel,
                       )}
                     />
-                    <HoneypotWidget
-                      updateFormData={(_, value) => {
-                        setUnsubHoney(value);
-                      }}
-                      field={fieldHoney}
-                    />
+                    {fieldHoney && (
+                      <HoneypotWidget
+                        updateFormData={(_, value) => {
+                          setUnsubHoney(value);
+                        }}
+                        field={fieldHoney}
+                      />
+                    )}
                     {/* CUSTOMIZATIONS: render rercaptcha */}
                     <RerCaptchaWidget
                       key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}

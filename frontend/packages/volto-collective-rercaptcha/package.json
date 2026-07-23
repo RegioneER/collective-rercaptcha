@@ -1,6 +1,6 @@
 {
   "name": "@regioneer/volto-collective-rercaptcha",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.8",
   "description": "Integration with rercaptcha in Plone",
   "main": "src/index.ts",
   "license": "MIT",

@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a8 (2026-07-23)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+
+#### Internal
+
+- Set npm publish via github ci and not via release-it [cekk] 
+
+
+
 ## 1.0.0a7 (2026-04-03)
 
 ### Backend

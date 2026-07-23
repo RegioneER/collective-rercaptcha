@@ -34,9 +34,22 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Determine npm dist-tag from version
+        id: npm-tag
+        working-directory: frontend/packages/volto-collective-rercaptcha
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" =~ -([a-zA-Z]+) ]]; then
+            TAG="${BASH_REMATCH[1]}"
+          else
+            TAG="latest"
+          fi
+          echo "Version $VERSION -> dist-tag $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Release to npm
         working-directory: frontend/packages/volto-collective-rercaptcha
-        run: pnpm publish --provenance --access public --no-git-checks
+        run: pnpm publish --provenance --access public --no-git-checks --tag "${{ steps.npm-tag.outputs.tag }}"
 
       - name: Dump npm debug log on failure
         if: failure()

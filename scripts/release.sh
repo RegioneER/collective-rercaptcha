@@ -55,15 +55,15 @@ node -e 'const [maj, min] = process.versions.node.split(".").map(Number); if (ma
 }
 echo ""
 
-# Verify npm authentication
-echo "Verifying npm authentication..."
-npm whoami > /dev/null 2>&1 || {
-    echo "❌ npm authentication failed"
-    echo "Please run: npm login"
-    exit 1
-}
-echo "✅ npm authentication verified"
-echo ""
+# Verify npm authentication - DISABLED because we publish it via github actions, which handles authentication automatically. If you want to enable this check, uncomment the following lines.
+# echo "Verifying npm authentication..."
+# npm whoami > /dev/null 2>&1 || {
+#     echo "❌ npm authentication failed"
+#     echo "Please run: npm login"
+#     exit 1
+# }
+# echo "✅ npm authentication verified"
+# echo ""
 
 # Install frontend dependencies
 echo "Installing frontend dependencies..."

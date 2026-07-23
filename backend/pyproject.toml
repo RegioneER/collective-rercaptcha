@@ -45,10 +45,10 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/collective/collective-rercaptcha"
+Homepage = "https://github.com/RegioneER/collective-rercaptcha"
 PyPI = "https://pypi.org/project/collective.rercaptcha"
-Source = "https://github.com/collective/collective-rercaptcha"
-Tracker = "https://github.com/collective/collective-rercaptcha/issues"
+Source = "https://github.com/RegioneER/collective-rercaptcha"
+Tracker = "https://github.com/RegioneER/collective-rercaptcha/issues"
 
 
 [project.entry-points."plone.autoinclude.plugin"]
@@ -87,7 +87,7 @@ filename = "CHANGELOG.md"
 start_string = "<!-- towncrier release notes start -->\n"
 title_format = "## {version} ({project_date})"
 template = "news/.changelog_template.jinja"
-issue_format = "[#{issue}](https://github.com/collective/collective-rercaptcha/issues/{issue})"
+issue_format = "[#{issue}](https://github.com/RegioneER/collective-rercaptcha/issues/{issue})"
 underlines = ["", "", ""]
 
 [[tool.towncrier.type]]

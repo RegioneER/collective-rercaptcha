@@ -11,10 +11,10 @@
     "react"
   ],
   "author": "RedTurtle Technology",
-  "homepage": "https://github.com/collective/collective-rercaptcha#readme",
+  "homepage": "https://github.com/RegioneER/collective-rercaptcha#readme",
   "repository": {
     "type": "git",
-    "url": "git@github.com:collective/collective-rercaptcha"
+    "url": "git+https://github.com/RegioneER/collective-rercaptcha.git"
   },
   "publishConfig": {
     "access": "public"

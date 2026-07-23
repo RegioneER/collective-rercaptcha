@@ -57,8 +57,8 @@ make create-site
 
 ## Contribute
 
-- [Issue tracker](https://github.com/collective/collective-rercaptcha/issues)
-- [Source code](https://github.com/collective/collective-rercaptcha/)
+- [Issue tracker](https://github.com/RegioneER/collective-rercaptcha/issues)
+- [Source code](https://github.com/RegioneER/collective-rercaptcha/)
 
 ### Prerequisites ✅
 
@@ -73,7 +73,7 @@ make create-site
 1.  Clone this repository.
 
     ```shell
-    git clone git@github.com:collective/collective-rercaptcha.git
+    git clone git@github.com:RegioneER/collective-rercaptcha.git
     cd collective-rercaptcha/backend
     ```
 

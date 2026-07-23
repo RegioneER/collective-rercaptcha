@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a9 (2026-07-23)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+
+#### Internal
+
+- Fix npm release [cekk] 
+
+
+
 ## 1.0.0a8 (2026-07-23)
 
 ### Backend

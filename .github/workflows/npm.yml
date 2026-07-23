@@ -37,3 +37,7 @@ jobs:
       - name: Release to npm
         working-directory: frontend/packages/volto-collective-rercaptcha
         run: pnpm publish --provenance --access public --no-git-checks --tag alpha
+
+      - name: Dump npm debug log on failure
+        if: failure()
+        run: cat /home/runner/.npm/_logs/*.log

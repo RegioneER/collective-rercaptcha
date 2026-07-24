@@ -3,7 +3,7 @@
   "version": "1.0.0-alpha.7",
   "description": "Integration with rercaptcha in Plone",
   "author": "RedTurtle Technology",
-  "homepage": "https://github.com/collective/collective-rercaptcha",
+  "homepage": "https://github.com/RegioneER/collective-rercaptcha",
   "license": "MIT",
   "keywords": [
     "volto-addon",
@@ -11,6 +11,10 @@
     "plone",
     "react"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RegioneER/collective-rercaptcha"
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "start": "VOLTOCONFIG=$(pwd)/volto.config.js pnpm --filter @plone/volto start",

@@ -1,6 +1,6 @@
 {
   "name": "@regioneer/volto-collective-rercaptcha",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.22",
   "description": "Integration with rercaptcha in Plone",
   "main": "src/index.ts",
   "license": "MIT",
@@ -11,10 +11,10 @@
     "react"
   ],
   "author": "RedTurtle Technology",
-  "homepage": "https://github.com/collective/collective-rercaptcha#readme",
+  "homepage": "https://github.com/RegioneER/collective-rercaptcha#readme",
   "repository": {
     "type": "git",
-    "url": "git@github.com:collective/collective-rercaptcha"
+    "url": "git+https://github.com/RegioneER/collective-rercaptcha.git"
   },
   "publishConfig": {
     "access": "public"

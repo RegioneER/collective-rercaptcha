@@ -4,7 +4,7 @@ Integration with rercaptcha in Plone
 
 [![npm](https://img.shields.io/npm/v/volto-collective-rercaptcha)](https://www.npmjs.com/package/volto-collective-rercaptcha)
 [![](https://img.shields.io/badge/-Storybook-ff4785?logo=Storybook&logoColor=white&style=flat-square)](https://collective.github.io/volto-collective-rercaptcha/)
-[![CI](https://github.com/collective/collective-rercaptcha/actions/workflows/main.yml/badge.svg)](https://github.com/collective/collective-rercaptcha/actions/workflows/main.yml)
+[![CI](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml/badge.svg)](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml)
 
 
 ## Features
@@ -98,7 +98,7 @@ For these reasons, it only works with pnpm and Volto 18.
 1.  Clone this repository, then change your working directory.
 
     ```shell
-    git clone git@github.com:collective/collective-rercaptcha.git
+    git clone git@github.com:RegioneER/collective-rercaptcha.git
     cd collective-rercaptcha/frontend
     ```
 

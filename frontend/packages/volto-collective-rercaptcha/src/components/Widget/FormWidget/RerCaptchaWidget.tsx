@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, type DefaultRootState } from 'react-redux';
+// eslint-disable-next-line import/no-unresolved
 import RerCapWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/CapJsWidget';
 import { useIntl, defineMessages } from 'react-intl';
 
@@ -47,6 +48,9 @@ const RerCaptchaWidget = (props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
+  // generation: usato come key di RerCapWidget per rimontarlo (e quindi
+  // ricalcolare un token fresco) quando quello corrente scade
+  const [generation, setGeneration] = useState(0);
   const intl = useIntl();
 
   // Garantisce che l'inizializzazione del campo avvenga una sola volta al mount
@@ -93,6 +97,7 @@ const RerCaptchaWidget = (props) => {
   return (
     <div className="rercap-widget-container" id={`field-${id}`}>
       <RerCapWidget
+        key={generation}
         endpoint={endpoint}
         onProgress={(p) => setProgress(p)}
         onSolve={(value) => {
@@ -113,6 +118,17 @@ const RerCaptchaWidget = (props) => {
           if (captchaToken) {
             captchaToken.current = null;
           }
+        }}
+        onReset={() => {
+          // Il token è scaduto (Cap emette 'reset' alla scadenza di
+          // resp.expires): invalidiamo il valore nel form e rimontiamo il
+          // motore per calcolare un token nuovo
+          setIsSolving(true);
+          if (captchaToken) {
+            captchaToken.current = null;
+          }
+          onChangeFormData(id, id, '', { label: id });
+          setGeneration((g) => g + 1);
         }}
       />
 

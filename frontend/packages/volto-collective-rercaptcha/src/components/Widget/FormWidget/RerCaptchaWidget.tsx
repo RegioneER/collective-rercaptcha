@@ -11,6 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { useSelector, type DefaultRootState } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Loader } from 'semantic-ui-react';
 // eslint-disable-next-line import/no-unresolved
 import RerCapWidget, {
@@ -40,6 +41,14 @@ const messages = defineMessages({
   checkButtonSolved: {
     id: 'rercaptcha_check_button_solved',
     defaultMessage: 'Verifica completata',
+  },
+  checkButtonError: {
+    id: 'rercaptcha_check_button_error',
+    defaultMessage: 'Verifica fallita',
+  },
+  checkButtonRetry: {
+    id: 'rercaptcha_check_button_retry',
+    defaultMessage: 'Riprova',
   },
 });
 
@@ -115,7 +124,6 @@ const RerCaptchaWidget = (props) => {
   const showCheckButton = !isLegacyMode && getShowCheckButton(rerCaptchaData);
 
   const [status, setStatus] = useState<CaptchaStatus>('idle');
-  const [error, setError] = useState(null);
   const [showPendingFeedback, setShowPendingFeedback] = useState(false);
   // generation: usato come key di RerCapWidget per rimontarlo (e quindi
   // poter calcolare un token nuovo) dopo un reset esplicito del chiamante
@@ -177,7 +185,6 @@ const RerCaptchaWidget = (props) => {
   const handleSolve = useCallback(
     (value: string) => {
       setStatus('solved');
-      setError(null);
       clearPendingFeedback();
 
       // Sblocchiamo il form impostando il token nel ref
@@ -196,16 +203,19 @@ const RerCaptchaWidget = (props) => {
   const handleError = useCallback(
     (err: string) => {
       setStatus('error');
-      setError(err);
       clearPendingFeedback();
 
       if (captchaToken) {
         captchaToken.current = null;
       }
 
+      // Il dettaglio tecnico va solo nel toast: a schermo, vicino al
+      // captcha, basta lo stato sintetico ("Verifica fallita").
+      toast.error(`${intl.formatMessage(messages.captchaError)}: ${err}`);
+
       settlePending((cb) => cb.reject(new Error(err)));
     },
-    [captchaToken, clearPendingFeedback, settlePending],
+    [captchaToken, clearPendingFeedback, settlePending, intl],
   );
 
   const runEngine = useCallback(() => {
@@ -234,6 +244,14 @@ const RerCaptchaWidget = (props) => {
           : undefined;
       }
 
+      // Nessun endpoint (captcha non attivo/non configurato): non c'è nulla
+      // da calcolare. Risolviamo subito invece di lasciare la Promise
+      // appesa per sempre in attesa di un onSolve/onError che non arriverà
+      // mai (il motore rifiuterebbe comunque di partire senza endpoint).
+      if (!endpoint) {
+        return isAsync ? Promise.resolve(undefined) : undefined;
+      }
+
       if (!isAsync) {
         if (status === 'idle' || status === 'error') runEngine();
         return undefined;
@@ -244,12 +262,11 @@ const RerCaptchaWidget = (props) => {
         if (status === 'idle' || status === 'error') runEngine();
       });
     },
-    [captchaToken, status, runEngine],
+    [captchaToken, status, runEngine, endpoint],
   );
 
   const reset = useCallback(() => {
     setStatus('idle');
-    setError(null);
     clearPendingFeedback();
     if (captchaToken) {
       captchaToken.current = null;
@@ -271,7 +288,18 @@ const RerCaptchaWidget = (props) => {
   }
 
   return (
-    <div className="rercap-widget-container" id={`field-${id}`}>
+    <div
+      className="rercap-widget-container"
+      id={`field-${id}`}
+      // In modalità bottone il widget deve poter stare in linea accanto al
+      // bottone di submit (posizionamento gestito da chi lo consuma), con
+      // un minimo di distanza da esso.
+      style={
+        showCheckButton
+          ? { display: 'inline-flex', marginLeft: '0.75em' }
+          : undefined
+      }
+    >
       <RerCapWidget
         key={generation}
         ref={engineRef}
@@ -282,21 +310,92 @@ const RerCaptchaWidget = (props) => {
       />
 
       {showCheckButton && (
-        <button
-          type="button"
-          className="rercap-check-button"
-          onClick={() => execute()}
-          disabled={status === 'solving' || status === 'solved'}
+        <span
+          className="rercap-check-widget"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4em' }}
         >
-          {status === 'solving' && <Loader active inline size="tiny" />}{' '}
-          {intl.formatMessage(
-            status === 'solved'
-              ? messages.checkButtonSolved
-              : status === 'solving'
-                ? messages.checkButtonSolving
-                : messages.checkButtonIdle,
+          {status === 'solved' ? (
+            <span
+              className="rercap-check-success"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4em',
+              }}
+            >
+              <span
+                aria-hidden="true"
+                style={{ color: '#21ba45', fontWeight: 'bold' }}
+              >
+                ✓
+              </span>
+              {intl.formatMessage(messages.checkButtonSolved)}
+            </span>
+          ) : status === 'error' ? (
+            <span
+              className="rercap-check-error"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4em',
+              }}
+            >
+              <span
+                aria-hidden="true"
+                style={{ color: '#db2828', fontWeight: 'bold' }}
+              >
+                ✕
+              </span>
+              {intl.formatMessage(messages.checkButtonError)}
+              <button
+                type="button"
+                className="rercap-check-retry"
+                onClick={() => execute()}
+                aria-label={intl.formatMessage(messages.checkButtonRetry)}
+                title={intl.formatMessage(messages.checkButtonRetry)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '1.6em',
+                  height: '1.6em',
+                  padding: 0,
+                  borderRadius: '50%',
+                  border: '1px solid #db2828',
+                  background: 'transparent',
+                  color: '#db2828',
+                  cursor: 'pointer',
+                  fontSize: '1em',
+                  lineHeight: 1,
+                }}
+              >
+                <span aria-hidden="true">↻</span>
+              </button>
+            </span>
+          ) : (
+            <label
+              className="rercap-check-checkbox"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4em',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={status === 'solving'}
+                disabled={status === 'solving'}
+                onChange={() => execute()}
+              />
+              {status === 'solving' && <Loader active inline size="tiny" />}
+              {intl.formatMessage(
+                status === 'solving'
+                  ? messages.checkButtonSolving
+                  : messages.checkButtonIdle,
+              )}
+            </label>
           )}
-        </button>
+        </span>
       )}
 
       {/* Il feedback "ci sto mettendo più del previsto" ha senso solo in
@@ -307,15 +406,16 @@ const RerCaptchaWidget = (props) => {
         variant={pendingFeedbackVariant}
       />
 
-      {/* Messaggi di errore (tecnici o di validazione Volto) */}
-      {(error || errorMessage) && (
+      {/* Errore di validazione Volto (es. campo captcha obbligatorio): gli
+          errori tecnici del calcolo (rete, servizio non raggiungibile...)
+          vanno solo nel toast, per non duplicare quanto già comunicato da
+          "Verifica fallita" in modalità bottone. */}
+      {errorMessage && (
         <div
           className="rercap-error-info"
           style={{ fontSize: '0.9em', color: '#db2828', marginTop: '5px' }}
         >
-          {error
-            ? `${intl.formatMessage(messages.captchaError)}: ${error}`
-            : errorMessage}
+          {errorMessage}
         </div>
       )}
     </div>

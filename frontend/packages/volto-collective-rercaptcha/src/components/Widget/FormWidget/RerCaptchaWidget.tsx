@@ -127,7 +127,8 @@ const RerCaptchaWidget = (props) => {
   const [showPendingFeedback, setShowPendingFeedback] = useState(false);
   // generation: usato come key di RerCapWidget per rimontarlo (e quindi
   // poter calcolare un token nuovo) dopo un reset esplicito del chiamante
-  // (es. dopo un submit andato a buon fine: i token cap.js sono monouso)
+  // (es. dopo un submit andato a buon fine, o alla scadenza del token: i
+  // token cap.js sono monouso)
   const [generation, setGeneration] = useState(0);
   const intl = useIntl();
 
@@ -307,6 +308,11 @@ const RerCaptchaWidget = (props) => {
         autoStart={isLegacyMode}
         onSolve={handleSolve}
         onError={handleError}
+        // Il token è scaduto (Cap emette 'reset' alla scadenza di
+        // resp.expires): riusiamo lo stesso reset() esposto al chiamante,
+        // che rimette lo stato a idle, pulisce il token e rimonta il motore
+        // per calcolarne uno nuovo.
+        onReset={reset}
       />
 
       {showCheckButton && (

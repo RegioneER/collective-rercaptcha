@@ -8,6 +8,12 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0-alpha.23 (2026-07-24)
+
+### Feature
+
+- Add rercaptcha to the newsletter subscribe/unsubscribe forms (customization of @redturtle/volto-newsletter Channel view). @giulio-red-turtle [#4](https://github.com/RegioneER/collective-rercaptcha/issue/4)
+
 ## 1.0.0-alpha.22 (2026-07-23)
 
 ## 1.0.0-alpha.21 (2026-07-23)

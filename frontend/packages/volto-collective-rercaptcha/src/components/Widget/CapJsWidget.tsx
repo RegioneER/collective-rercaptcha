@@ -38,7 +38,8 @@ interface RerCapWidgetProps {
   onProgress?: (progress: number) => void;
 
   /**
-   * Callback opzionale chiamata quando il captcha viene resettato internamente.
+   * Callback opzionale chiamata quando il captcha viene resettato internamente
+   * (tipicamente perché il token è scaduto: vedi suppressResetRef più sotto).
    */
   onReset?: () => void;
 
@@ -97,6 +98,11 @@ const RerCapWidget = forwardRef<RerCapWidgetHandle, RerCapWidgetProps>(
     // capInstanceRef: memorizza l'istanza della classe Cap per poterla pulire o resettare al distacco (unmount)
     const capInstanceRef = useRef<Cap | null>(null);
 
+    // suppressResetRef: evita di propagare a onReset i reset che generiamo noi
+    // stessi durante il cleanup (altrimenti chi rimonta il widget su onReset
+    // entrerebbe in un loop infinito di calcoli)
+    const suppressResetRef = useRef<boolean>(false);
+
     // Pattern "latest ref" per le callback: i consumatori le passano come
     // arrow function inline (nuova identità a ogni render). `runSolve` deve
     // restare stabile (viene esposta via ref e può essere invocata molto
@@ -142,7 +148,11 @@ const RerCapWidget = forwardRef<RerCapWidgetHandle, RerCapWidgetProps>(
           onProgressRef.current?.(e.detail.progress);
         });
 
+        // L'evento 'reset' viene emesso da Cap anche alla scadenza del token
+        // (timer interno sulla base di resp.expires): lo propaghiamo al padre
+        // che può così richiedere un token nuovo
         cap.addEventListener('reset', () => {
+          if (suppressResetRef.current) return;
           onResetRef.current?.();
         });
 
@@ -198,8 +208,12 @@ const RerCapWidget = forwardRef<RerCapWidgetHandle, RerCapWidgetProps>(
        */
       return () => {
         if (capInstanceRef.current) {
-          // reset() ferma i worker e pulisce lo stato interno dell'istanza
+          // reset() ferma i worker e pulisce lo stato interno dell'istanza.
+          // Sopprimiamo l'evento 'reset' generato da questa chiamata: non è
+          // una scadenza del token ma un cleanup nostro
+          suppressResetRef.current = true;
           capInstanceRef.current.reset();
+          suppressResetRef.current = false;
         }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -29,7 +29,8 @@ A custom controlpanel is added for easy configurability:
 ```python
 requests.post(
     f"{captcha_uri}/{captcha_site_key}/siteverify",
-    data={"secret": captcha_secret, "response": token})
+    data={"secret": captcha_secret, "response": token},
+)
 ```
 
 every custom form that implements this service will have to read the custom expander:

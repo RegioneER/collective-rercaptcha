@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-03-24 09:41+0000\n"
+"POT-Creation-Date: 2026-08-07 10:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,32 +31,32 @@ msgid "Uninstall collective-rercaptcha setup."
 msgstr "Disinstalla il servizio RerCaptcha"
 
 #. Default: "Captcha Secret"
-#: collective/rercaptcha/controlpanels/controlpanel.py:39
+#: collective/rercaptcha/controlpanels/controlpanel.py:49
 msgid "captcha_secret"
 msgstr "Captcha Secret"
 
 #. Default: "The secret key of the captcha service to use."
-#: collective/rercaptcha/controlpanels/controlpanel.py:40
+#: collective/rercaptcha/controlpanels/controlpanel.py:50
 msgid "captcha_secret_description"
 msgstr "Secret del servizio captcha."
 
 #. Default: "Captcha Site Key"
-#: collective/rercaptcha/controlpanels/controlpanel.py:30
+#: collective/rercaptcha/controlpanels/controlpanel.py:40
 msgid "captcha_site_key"
 msgstr "Captcha Site Key"
 
 #. Default: "The site key of the captcha service to use."
-#: collective/rercaptcha/controlpanels/controlpanel.py:31
+#: collective/rercaptcha/controlpanels/controlpanel.py:41
 msgid "captcha_site_key_description"
 msgstr "La chiave del sito captcha."
 
 #. Default: "Captcha URI"
-#: collective/rercaptcha/controlpanels/controlpanel.py:20
+#: collective/rercaptcha/controlpanels/controlpanel.py:30
 msgid "captcha_uri"
 msgstr "URI del captcha"
 
 #. Default: "The URI of the captcha service to use.For example: https://www.google.com/recaptcha/api/siteverify"
-#: collective/rercaptcha/controlpanels/controlpanel.py:21
+#: collective/rercaptcha/controlpanels/controlpanel.py:31
 msgid "captcha_uri_description"
 msgstr "L'URI del servizio captcha da utilizzare (es: https://www.google.com/recaptcha/api/siteverify)."
 
@@ -69,31 +69,41 @@ msgid "collective-rercaptcha: Uninstall"
 msgstr "collective-rercaptcha: Disinstalla"
 
 #. Default: "POST requests must provide 'capjs-token'. Please contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:32
+#: collective/rercaptcha/eventsubscribers.py:37
 #, fuzzy
 msgid "no_capjs_token"
 msgstr "Le richieste POST devono fornire il token 'capjs-token'."
 
 #. Default: "Error in the captcha service response. Please contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:74
+#: collective/rercaptcha/eventsubscribers.py:79
 #, fuzzy
 msgid "rer_capcha_error"
 msgstr "Errore nella chiamata al servizio RerCaptcha."
 
 #. Default: "Captcha service rejected the request. Please contact us if we are wrong."
-#: collective/rercaptcha/eventsubscribers.py:175
+#: collective/rercaptcha/eventsubscribers.py:182
 msgid "rer_captcha_failed"
 msgstr "Il servizio RerCaptcha ha rigettato la richiesta."
 
 #. Default: "Manage RerCaptcha settings."
-#: collective/rercaptcha/controlpanels/controlpanel.py:63
+#: collective/rercaptcha/controlpanels/controlpanel.py:73
 msgid "rercaptcha_settings_description"
 msgstr "Modifica la configurazione del servizio RerCaptcha."
 
 #. Default: "RerCaptcha Settings"
-#: collective/rercaptcha/controlpanels/controlpanel.py:62
+#: collective/rercaptcha/controlpanels/controlpanel.py:72
 msgid "rercaptcha_settings_label"
 msgstr "Configurazione RerCaptcha"
+
+#. Default: "Show Button"
+#: collective/rercaptcha/controlpanels/controlpanel.py:20
+msgid "show_button"
+msgstr "Mostra pulsante"
+
+#. Default: "Whether to show the captcha button or not."
+#: collective/rercaptcha/controlpanels/controlpanel.py:21
+msgid "show_button_description"
+msgstr "Se attivato, viene mostrato il pulsante del captcha."
 
 #. Default: "Use Captcha"
 #: collective/rercaptcha/controlpanels/controlpanel.py:9
@@ -106,11 +116,11 @@ msgid "use_captcha_description"
 msgstr "Se attivato, il servizio RerCaptcha sarà utilizzato."
 
 #. Default: "Whitelisted Routes"
-#: collective/rercaptcha/controlpanels/controlpanel.py:48
+#: collective/rercaptcha/controlpanels/controlpanel.py:58
 msgid "whitelisted_routes"
 msgstr "Azioni controllate"
 
 #. Default: "List of routes that are allowed to use the captcha service.For example: @foo"
-#: collective/rercaptcha/controlpanels/controlpanel.py:49
+#: collective/rercaptcha/controlpanels/controlpanel.py:59
 msgid "whitelisted_routes_description"
 msgstr "Elenco di azioni che saranno soggette al controllo del servizio RerCaptcha, separate da spazi."

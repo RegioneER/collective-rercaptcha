@@ -121,8 +121,9 @@ Important points:
 
 If `show-button` is active, **your own** form's submit button must be
 disabled until the verification completes (otherwise the form can be
-submitted without ever clicking the checkbox). Use
-`useRerCaptchaShowButton()` (not a local flag):
+submitted without ever clicking the checkbox). If your form lives inside
+this package (like `FeedbackForm.jsx` or `Channel.jsx`), use
+`useRerCaptchaShowButton()` instead of a local flag:
 
 ```jsx
 // eslint-disable-next-line import/no-unresolved
@@ -134,7 +135,23 @@ const blocksSubmit = showsOwnButton && !hasToken; // hasToken: however your form
 <button type="submit" disabled={blocksSubmit}>Submit</button>
 ```
 
-In invisible mode (`showsOwnButton === false`) this condition is always
+**If your form lives in a different, independently-built package**
+(like `FormView.jsx` in `design-comuni-plone-theme`), don't import this
+hook — a generic/shared package must not carry a hard dependency on this
+addon, or its build breaks for anyone using it without
+`collective-rercaptcha` installed. Read the same field straight from
+Redux instead:
+
+```jsx
+import { useSelector } from 'react-redux';
+
+const rerCaptchaData = useSelector(
+  (state) => state.content?.data?.['@components']?.['rercaptcha-data'],
+);
+const showsOwnButton = !!rerCaptchaData?.['show-button'];
+```
+
+Either way, in invisible mode (`showsOwnButton === false`) this condition is always
 `false`: the button stays clickable, because the token doesn't exist yet
 before the click (the click itself is what starts the computation).
 **Never pre-block submit based solely on "the token doesn't exist yet"**

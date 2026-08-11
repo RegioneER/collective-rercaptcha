@@ -87,10 +87,20 @@ The component used inside forms. Decides the mode by reading
 
 The single place that reads `rercaptcha-data` from Redux and the
 `show-button` flag. Used both internally by `RerCaptchaWidget` and by
-whoever consumes the widget (`FormView.jsx`, `FeedbackForm.jsx`,
+consumers that live in this same package (`FeedbackForm.jsx`,
 `Channel.jsx`) to decide whether to pre-block their own submit button.
 **The flag's name is provisional**: if the backend renames it, this is
 the only file that needs updating.
+
+**Exception: `FormView.jsx`** (in `design-comuni-plone-theme`, a separate
+repo built independently of this package) does **not** import this hook.
+That theme is generic and distributed on its own — a hard dependency on
+`@regioneer/volto-collective-rercaptcha` would break its build for anyone
+using the theme without this addon installed. It reads the same
+`rercaptcha-data`/`show-button` field directly from Redux instead,
+duplicating the couple of lines this hook would otherwise save. If the
+flag's name changes, `FormView.jsx` needs updating too, separately from
+this file.
 
 ## Why this split
 

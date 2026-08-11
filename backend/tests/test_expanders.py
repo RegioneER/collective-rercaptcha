@@ -34,6 +34,9 @@ def test_expander_with_full_data(functional):
         name="whitelisted_routes",
         value=["querystring-search"],
     )
+    api.portal.set_registry_record(
+        interface=IRerCaptchaSettings, name="show_button", value=True
+    )
 
     transaction.commit()
 
@@ -43,6 +46,8 @@ def test_expander_with_full_data(functional):
     assert "@id" in result["rercaptcha-data"]
     assert "captcha-url" in result["rercaptcha-data"]
     assert result["rercaptcha-data"]["captcha-url"] == "http://mysite.com/xxxx"
+    assert "show-button" in result["rercaptcha-data"]
+    assert result["rercaptcha-data"]["show-button"] is True
 
 
 @pytest.mark.functional
@@ -69,6 +74,9 @@ def test_expander_with_api_request(functional):
         name="whitelisted_routes",
         value=["querystring-search"],
     )
+    api.portal.set_registry_record(
+        interface=IRerCaptchaSettings, name="show_button", value=True
+    )
 
     transaction.commit()
 
@@ -86,3 +94,5 @@ def test_expander_with_api_request(functional):
     assert (
         obj["@components"]["rercaptcha-data"]["captcha-url"] == "http://mysite.com/xxxx"
     )
+    assert "show-button" in obj["@components"]["rercaptcha-data"]
+    assert obj["@components"]["rercaptcha-data"]["show-button"] is True

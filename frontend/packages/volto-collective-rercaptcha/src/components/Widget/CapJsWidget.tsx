@@ -183,12 +183,13 @@ const RerCapWidget = forwardRef<RerCapWidgetHandle, RerCapWidgetProps>(
             // Rilascio il lock di esecuzione
             solvingRef.current = false;
           });
-      } catch (err: any) {
+      } catch (err: unknown) {
         // eslint-disable-next-line no-console
         console.error('RerCapWidget - Errore critico inizializzazione:', err);
         solvingRef.current = false;
         onErrorRef.current?.(
-          err?.message || 'Impossibile inizializzare il motore captcha PoW',
+          (err instanceof Error && err.message) ||
+            'Impossibile inizializzare il motore captcha PoW',
         );
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps

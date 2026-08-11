@@ -26,6 +26,9 @@ class RerCaptchaExpander:
         captcha_site_key = api.portal.get_registry_record(
             interface=IRerCaptchaSettings, name="captcha_site_key"
         )
+        show_button = api.portal.get_registry_record(
+            interface=IRerCaptchaSettings, name="show_button"
+        )
 
         if not captcha_uri or not captcha_site_key:
             return {}
@@ -34,5 +37,6 @@ class RerCaptchaExpander:
             "rercaptcha-data": {
                 "@id": f"{self.context.absolute_url()}/@rercaptcha-data",
                 "captcha-url": f"{captcha_uri.rstrip('/')}/{captcha_site_key}",
+                "show-button": show_button,
             }
         }

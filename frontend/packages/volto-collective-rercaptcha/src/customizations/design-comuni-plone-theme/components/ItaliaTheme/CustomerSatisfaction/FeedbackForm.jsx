@@ -38,6 +38,8 @@ import {
 } from 'volto-feedback';
 // eslint-disable-next-line import/no-unresolved
 import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+// eslint-disable-next-line import/no-unresolved
+import { useRerCaptchaShowButton } from '@regioneer/volto-collective-rercaptcha/hooks/useRerCaptchaShowButton';
 import cx from 'classnames';
 // eslint-disable-next-line import/no-unresolved
 import AnswersStep from 'design-comuni-plone-theme/components/ItaliaTheme/CustomerSatisfaction/Steps/AnswersStep';
@@ -165,10 +167,7 @@ const FeedbackForm = ({ title, pathname }) => {
   // In modalità bottone esplicito il submit va tenuto bloccato finché la
   // verifica non è completata; in modalità invisibile (default) resta
   // sempre cliccabile, altrimenti il token non potrebbe mai generarsi.
-  const rerCaptchaData = useSelector(
-    (state) => state.content?.data?.['@components']?.['rercaptcha-data'],
-  );
-  const rercaptchaShowsOwnButton = !!rerCaptchaData?.['show-button'];
+  const rercaptchaShowsOwnButton = useRerCaptchaShowButton();
 
   const fieldHoney = __CLIENT__
     ? window.env.RAZZLE_HONEYPOT_FIELD

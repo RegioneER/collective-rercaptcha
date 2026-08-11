@@ -4,6 +4,11 @@ import { RerCapWidget } from './components';
 import { CaptchaTestView, CaptchaTestEdit } from './components/Blocks';
 import worldSVG from '@plone/volto/icons/world.svg';
 
+export {
+  useRerCaptchaData,
+  useRerCaptchaShowButton,
+} from './hooks/useRerCaptchaShowButton';
+
 function applyConfig(config: ConfigType) {
   installSettings(config);
 

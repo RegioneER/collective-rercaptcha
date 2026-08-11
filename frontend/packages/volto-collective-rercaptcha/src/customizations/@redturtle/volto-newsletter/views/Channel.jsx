@@ -46,6 +46,8 @@ import {
 import HoneypotWidget from '@redturtle/volto-newsletter/views/HoneypotWidget/HoneypotWidget';
 // eslint-disable-next-line import/no-unresolved
 import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+// eslint-disable-next-line import/no-unresolved
+import { useRerCaptchaData } from '@regioneer/volto-collective-rercaptcha/hooks/useRerCaptchaShowButton';
 
 const messages = defineMessages({
   invalid_email: {
@@ -143,10 +145,7 @@ const Channel = ({ content, location }) => {
 
   /* CUSTOMIZATIONS: se l'expander rercaptcha-data è presente, il captcha è
      attivo lato backend e i form lo richiedono */
-  const rerCaptchaData =
-    useSelector(
-      (state) => state.content?.data?.['@components']?.['rercaptcha-data'],
-    ) || null;
+  const rerCaptchaData = useRerCaptchaData();
   const rerCaptchaEnabled = !!rerCaptchaData;
   // Modalità bottone esplicito: in questo caso, a differenza di quella
   // invisibile, il submit va tenuto bloccato finché la verifica non è

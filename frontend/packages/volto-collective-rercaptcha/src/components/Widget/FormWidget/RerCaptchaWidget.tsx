@@ -102,12 +102,13 @@ const RerCaptchaWidget = ({
     <div
       className="rercap-widget-container"
       id={`field-${id}`}
-      // In modalità bottone il widget deve poter stare in linea accanto al
+      // In modalità bottone il widget deve poter stare in linea prima del
       // bottone di submit (posizionamento gestito da chi lo consuma), con
-      // un minimo di distanza da esso.
+      // un minimo di distanza da esso: marginRight, non marginLeft, perché
+      // il widget precede il bottone nel DOM (vedi FormView.jsx/Channel.jsx).
       style={
         showCheckButton
-          ? { display: 'inline-flex', marginLeft: '0.75em' }
+          ? { display: 'inline-flex', marginRight: '0.75em' }
           : undefined
       }
     >

@@ -14,8 +14,10 @@
   - il campo email viene controllato prima di avviare il calcolo captcha
     (un campo vuoto non deve far partire il calcolo, il file originale non
     aveva nessuna validazione client-side, solo quella del backend)
-  - RerCaptchaWidget si renderizza dopo il bottone di invio (a destra),
-    non più prima
+  - RerCaptchaWidget si renderizza prima del bottone di invio (a sinistra),
+    e prima anche nel DOM (non solo visivamente): altrimenti con la sola
+    tastiera il Tab dopo aver spuntato la checkbox del captcha (modalità
+    bottone) uscirebbe dal form invece di raggiungere il bottone
   - in modalità bottone esplicito (flag `show-button`) il bottone di invio
     resta disabilitato finché la verifica non è completata; in modalità
     invisibile (default) resta sempre cliccabile, come richiesto dal punto
@@ -372,6 +374,21 @@ const Channel = ({ content, location }) => {
                           field={fieldHoney}
                         />
                       )}
+                      {/* CUSTOMIZATIONS: render rercaptcha, a sinistra del
+                          bottone di invio e prima nel DOM, non solo
+                          visivamente: altrimenti con la sola tastiera il Tab
+                          dopo aver spuntato la checkbox (modalità bottone)
+                          esce dal form invece di raggiungere il bottone */}
+                      {subRerCaptchaEnabled && (
+                        <RerCaptchaWidget
+                          key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
+                          id={'capjs-token'}
+                          captchaRef={subCaptchaRef}
+                          onChangeFormData={(id, label, value) => {
+                            setSubRerCaptchaToken(value);
+                          }}
+                        />
+                      )}
                       <Button
                         color="primary"
                         className="btn-icon"
@@ -393,18 +410,6 @@ const Channel = ({ content, location }) => {
                         />
                         <span>{intl.formatMessage(messages.subscribe)}</span>
                       </Button>
-                      {/* CUSTOMIZATIONS: render rercaptcha, a destra del
-                          bottone di invio */}
-                      {subRerCaptchaEnabled && (
-                        <RerCaptchaWidget
-                          key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
-                          id={'capjs-token'}
-                          captchaRef={subCaptchaRef}
-                          onChangeFormData={(id, label, value) => {
-                            setSubRerCaptchaToken(value);
-                          }}
-                        />
-                      )}
                     </>
                   )}
                 </Form>
@@ -463,6 +468,21 @@ const Channel = ({ content, location }) => {
                         field={fieldHoney}
                       />
                     )}
+                    {/* CUSTOMIZATIONS: render rercaptcha, a sinistra del
+                        bottone di invio e prima nel DOM, non solo
+                        visivamente: altrimenti con la sola tastiera il Tab
+                        dopo aver spuntato la checkbox (modalità bottone)
+                        esce dal form invece di raggiungere il bottone */}
+                    {unsubRerCaptchaEnabled && (
+                      <RerCaptchaWidget
+                        key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}
+                        id={'capjs-token'}
+                        captchaRef={unsubCaptchaRef}
+                        onChangeFormData={(id, label, value) => {
+                          setUnsubRerCaptchaToken(value);
+                        }}
+                      />
+                    )}
                     <Button
                       color="primary"
                       className="btn-icon"
@@ -484,18 +504,6 @@ const Channel = ({ content, location }) => {
                       />
                       <span>{intl.formatMessage(messages.unsubscribe)}</span>
                     </Button>
-                    {/* CUSTOMIZATIONS: render rercaptcha, a destra del
-                        bottone di invio */}
-                    {unsubRerCaptchaEnabled && (
-                      <RerCaptchaWidget
-                        key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}
-                        id={'capjs-token'}
-                        captchaRef={unsubCaptchaRef}
-                        onChangeFormData={(id, label, value) => {
-                          setUnsubRerCaptchaToken(value);
-                        }}
-                      />
-                    )}
                   </>
                 )}
               </Form>

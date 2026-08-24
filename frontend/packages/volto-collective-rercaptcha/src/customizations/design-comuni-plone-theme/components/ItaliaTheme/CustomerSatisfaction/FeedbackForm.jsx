@@ -3,9 +3,14 @@
   - il calcolo del captcha parte al click sul bottone finale "Avanti/Invia",
     non più alla scelta del voto a stelle: RerCaptchaWidget riceve una
     captchaRef ed è sendFormData a invocare execute() al momento giusto
-  - RerCaptchaWidget si renderizza solo nell'ultimo step, accanto (a destra)
-    al bottone finale, dentro lo stesso contenitore flex dei bottoni
-    prev/next, invece che sopra ad essi in ogni step
+  - RerCaptchaWidget si renderizza solo nell'ultimo step, sopra la riga dei
+    bottoni prev/next (non più al loro interno, né sotto): sia perché il
+    messaggio di attesa "Attendi, stiamo verificando..." occupa spazio a
+    flusso normale solo quando compare, e se fosse dentro la riga flex
+    centrata dei bottoni (`justify-content-center`) il suo comparire/sparire
+    ricentrerebbe la riga facendo "saltare" i bottoni; sia per il tab order
+    in modalità bottone esplicito, dove il widget precede anche nel DOM il
+    bottone finale
   - in modalità bottone esplicito (flag `show-button`) il bottone finale
     resta bloccato finché la verifica non è completata; in modalità
     invisibile (default) resta sempre cliccabile
@@ -418,6 +423,19 @@ const FeedbackForm = ({ title, pathname }) => {
                         onVerify={onVerifyCaptcha}
                         action={action}
                       />
+                      {step === numberOfSteps - 1 &&
+                        rercaptchaEnabled &&
+                        currentVote !== undefined && (
+                          <div className="d-flex justify-content-center">
+                            <RerCaptchaWidget
+                              id={'capjs-token'}
+                              captchaRef={rerCaptchaRef}
+                              onChangeFormData={(id, label, value) => {
+                                updateFormData(id, value);
+                              }}
+                            />
+                          </div>
+                        )}
                       <div
                         className={cx(
                           'form-step-actions flex-nowrap w100 justify-content-center button-shadow',
@@ -481,17 +499,6 @@ const FeedbackForm = ({ title, pathname }) => {
                             {intl.formatMessage(messages.next)}
                           </button>
                         )}
-                        {step === numberOfSteps - 1 &&
-                          rercaptchaEnabled &&
-                          currentVote !== undefined && (
-                            <RerCaptchaWidget
-                              id={'capjs-token'}
-                              captchaRef={rerCaptchaRef}
-                              onChangeFormData={(id, label, value) => {
-                                updateFormData(id, value);
-                              }}
-                            />
-                          )}
                       </div>
                     </>
                   )}

@@ -5,7 +5,7 @@ import type { CaptchaStatus } from './useRerCaptchaEngine';
 const messages = defineMessages({
   checkButtonIdle: {
     id: 'rercaptcha_check_button_idle',
-    defaultMessage: 'Verifica di non essere un robot',
+    defaultMessage: '* Conferma di non essere un robot',
   },
   checkButtonSolving: {
     id: 'rercaptcha_check_button_solving',

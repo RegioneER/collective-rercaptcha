@@ -20,6 +20,11 @@
     resta disabilitato finché la verifica non è completata; in modalità
     invisibile (default) resta sempre cliccabile, come richiesto dal punto
     sopra sul calcolo al click
+  - iscrizione e cancellazione si attivano indipendentemente, in base alla
+    presenza rispettivamente di `@subscribe-newsletter` e
+    `@unsubscribe-newsletter` tra le "Azioni controllate"
+    (`whitelisted_routes`) del pannello di controllo di rercaptcha: stessa
+    lista che il backend usa per l'enforcement, non un flag dedicato
 */
 import React, { useState, createRef, useEffect, useRef } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
@@ -46,8 +51,11 @@ import {
 import HoneypotWidget from '@redturtle/volto-newsletter/views/HoneypotWidget/HoneypotWidget';
 // eslint-disable-next-line import/no-unresolved
 import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
-// eslint-disable-next-line import/no-unresolved
-import { useRerCaptchaData } from '@regioneer/volto-collective-rercaptcha/hooks/useRerCaptchaShowButton';
+import {
+  useRerCaptchaData,
+  useRerCaptchaActionEnabled,
+  // eslint-disable-next-line import/no-unresolved
+} from '@regioneer/volto-collective-rercaptcha/hooks/useRerCaptchaShowButton';
 
 const messages = defineMessages({
   invalid_email: {
@@ -143,10 +151,16 @@ const Channel = ({ content, location }) => {
     error: unsubscribeError,
   } = useSelector((state) => state.unsubscribeNewsletter);
 
-  /* CUSTOMIZATIONS: se l'expander rercaptcha-data è presente, il captcha è
-     attivo lato backend e i form lo richiedono */
+  /* CUSTOMIZATIONS: iscrizione e cancellazione si attivano indipendentemente
+     in base alla propria action nelle "Azioni controllate" del pannello di
+     controllo di rercaptcha (vedi commento in testa al file) */
   const rerCaptchaData = useRerCaptchaData();
-  const rerCaptchaEnabled = !!rerCaptchaData;
+  const subRerCaptchaEnabled = useRerCaptchaActionEnabled(
+    '@subscribe-newsletter',
+  );
+  const unsubRerCaptchaEnabled = useRerCaptchaActionEnabled(
+    '@unsubscribe-newsletter',
+  );
   // Modalità bottone esplicito: in questo caso, a differenza di quella
   // invisibile, il submit va tenuto bloccato finché la verifica non è
   // completata (altrimenti si può inviare senza aver mai cliccato il
@@ -188,14 +202,14 @@ const Channel = ({ content, location }) => {
     // Usiamo il valore risolto dalla Promise, non uno stato locale: evita
     // di leggere una versione non ancora aggiornata per via della chiusura
     // di questa funzione.
-    const rerCaptchaToken = await subCaptchaRef.current?.execute({
-      async: true,
-    });
+    const rerCaptchaToken = subRerCaptchaEnabled
+      ? await subCaptchaRef.current?.execute({ async: true })
+      : undefined;
     dispatch(
       subscribeNewsletter(path, {
         email,
         ...(fieldHoney && { [fieldHoney]: subHoney }),
-        ...(rerCaptchaEnabled && { 'capjs-token': rerCaptchaToken }),
+        ...(subRerCaptchaEnabled && { 'capjs-token': rerCaptchaToken }),
       }),
     );
   };
@@ -206,14 +220,14 @@ const Channel = ({ content, location }) => {
       return;
     }
 
-    const rerCaptchaToken = await unsubCaptchaRef.current?.execute({
-      async: true,
-    });
+    const rerCaptchaToken = unsubRerCaptchaEnabled
+      ? await unsubCaptchaRef.current?.execute({ async: true })
+      : undefined;
     dispatch(
       unsubscribeNewsletter(path, {
         email: unsubEmail,
         ...(fieldHoney && { [fieldHoney]: unsubHoney }),
-        ...(rerCaptchaEnabled && { 'capjs-token': rerCaptchaToken }),
+        ...(unsubRerCaptchaEnabled && { 'capjs-token': rerCaptchaToken }),
       }),
     );
   };
@@ -366,7 +380,9 @@ const Channel = ({ content, location }) => {
                         icon={false}
                         disabled={
                           subscribeLoading ||
-                          (rercaptchaShowsOwnButton && !subRerCaptchaToken)
+                          (subRerCaptchaEnabled &&
+                            rercaptchaShowsOwnButton &&
+                            !subRerCaptchaToken)
                         }
                       >
                         <Icon
@@ -379,14 +395,16 @@ const Channel = ({ content, location }) => {
                       </Button>
                       {/* CUSTOMIZATIONS: render rercaptcha, a destra del
                           bottone di invio */}
-                      <RerCaptchaWidget
-                        key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
-                        id={'capjs-token'}
-                        captchaRef={subCaptchaRef}
-                        onChangeFormData={(id, label, value) => {
-                          setSubRerCaptchaToken(value);
-                        }}
-                      />
+                      {subRerCaptchaEnabled && (
+                        <RerCaptchaWidget
+                          key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
+                          id={'capjs-token'}
+                          captchaRef={subCaptchaRef}
+                          onChangeFormData={(id, label, value) => {
+                            setSubRerCaptchaToken(value);
+                          }}
+                        />
+                      )}
                     </>
                   )}
                 </Form>
@@ -453,7 +471,9 @@ const Channel = ({ content, location }) => {
                       icon={false}
                       disabled={
                         unsubscribeLoading ||
-                        (rercaptchaShowsOwnButton && !unsubRerCaptchaToken)
+                        (unsubRerCaptchaEnabled &&
+                          rercaptchaShowsOwnButton &&
+                          !unsubRerCaptchaToken)
                       }
                     >
                       <Icon
@@ -466,14 +486,16 @@ const Channel = ({ content, location }) => {
                     </Button>
                     {/* CUSTOMIZATIONS: render rercaptcha, a destra del
                         bottone di invio */}
-                    <RerCaptchaWidget
-                      key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}
-                      id={'capjs-token'}
-                      captchaRef={unsubCaptchaRef}
-                      onChangeFormData={(id, label, value) => {
-                        setUnsubRerCaptchaToken(value);
-                      }}
-                    />
+                    {unsubRerCaptchaEnabled && (
+                      <RerCaptchaWidget
+                        key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}
+                        id={'capjs-token'}
+                        captchaRef={unsubCaptchaRef}
+                        onChangeFormData={(id, label, value) => {
+                          setUnsubRerCaptchaToken(value);
+                        }}
+                      />
+                    )}
                   </>
                 )}
               </Form>

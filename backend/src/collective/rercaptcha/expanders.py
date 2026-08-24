@@ -29,6 +29,9 @@ class RerCaptchaExpander:
         show_button = api.portal.get_registry_record(
             interface=IRerCaptchaSettings, name="show_button"
         )
+        whitelisted_routes = api.portal.get_registry_record(
+            interface=IRerCaptchaSettings, name="whitelisted_routes"
+        )
 
         if not captcha_uri or not captcha_site_key:
             return {}
@@ -38,5 +41,6 @@ class RerCaptchaExpander:
                 "@id": f"{self.context.absolute_url()}/@rercaptcha-data",
                 "captcha-url": f"{captcha_uri.rstrip('/')}/{captcha_site_key}",
                 "show-button": show_button,
+                "whitelisted-routes": list(whitelisted_routes or []),
             }
         }

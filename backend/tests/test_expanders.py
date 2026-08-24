@@ -48,6 +48,8 @@ def test_expander_with_full_data(functional):
     assert result["rercaptcha-data"]["captcha-url"] == "http://mysite.com/xxxx"
     assert "show-button" in result["rercaptcha-data"]
     assert result["rercaptcha-data"]["show-button"] is True
+    assert "whitelisted-routes" in result["rercaptcha-data"]
+    assert result["rercaptcha-data"]["whitelisted-routes"] == ["querystring-search"]
 
 
 @pytest.mark.functional
@@ -96,3 +98,7 @@ def test_expander_with_api_request(functional):
     )
     assert "show-button" in obj["@components"]["rercaptcha-data"]
     assert obj["@components"]["rercaptcha-data"]["show-button"] is True
+    assert "whitelisted-routes" in obj["@components"]["rercaptcha-data"]
+    assert obj["@components"]["rercaptcha-data"]["whitelisted-routes"] == [
+        "querystring-search"
+    ]

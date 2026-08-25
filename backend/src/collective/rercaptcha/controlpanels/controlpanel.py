@@ -16,6 +16,16 @@ class IRerCaptchaSettings(IControlpanel):
         default=False,
     )
 
+    show_button = schema.Bool(
+        title=_("show_button", default="Show Button"),
+        description=_(
+            "show_button_description",
+            default="Whether to show the captcha button or not.",
+        ),
+        required=False,
+        default=False,
+    )
+
     captcha_uri = schema.URI(
         title=_("captcha_uri", default="Captcha URI"),
         description=_(

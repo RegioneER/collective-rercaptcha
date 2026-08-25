@@ -1,0 +1,1 @@
+Expose `whitelisted_routes` in the `rercaptcha-data` expander, so the frontend can decide per integration point (Customer Satisfaction, Newsletter) whether to activate the captcha, matching what the backend actually enforces.

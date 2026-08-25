@@ -24,6 +24,8 @@ class Captcha extends React.Component {
     } else if (captcha === 'hcaptcha' || captcha === 'hcaptcha_invisible') {
       captchaRef.current && captchaRef.current.resetCaptcha();
       captchaToken.current = null;
+    } else if (captcha === 'rercaptcha') {
+      captchaRef.current && captchaRef.current.reset();
     }
   }
 
@@ -33,6 +35,9 @@ class Captcha extends React.Component {
     if (captcha === 'recaptcha') {
       return captchaRef.current.verify();
     } else if (captcha === 'hcaptcha' || captcha === 'hcaptcha_invisible') {
+      if (!captchaToken.current)
+        return captchaRef.current.execute({ async: true });
+    } else if (captcha === 'rercaptcha') {
       if (!captchaToken.current)
         return captchaRef.current.execute({ async: true });
     }

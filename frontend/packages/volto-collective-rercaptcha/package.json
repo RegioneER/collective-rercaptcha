@@ -1,6 +1,6 @@
 {
   "name": "@regioneer/volto-collective-rercaptcha",
-  "version": "1.0.0-alpha.22",
+  "version": "1.0.0-alpha.24",
   "description": "Integration with rercaptcha in Plone",
   "main": "src/index.ts",
   "license": "MIT",
@@ -36,6 +36,7 @@
     "design-react-kit": "5.0.0-1",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
+    "react-toastify": "^5.4.1",
     "reactstrap": "^9.1.4",
     "volto-feedback": "0.7.2",
     "volto-form-block": "3.17.1"

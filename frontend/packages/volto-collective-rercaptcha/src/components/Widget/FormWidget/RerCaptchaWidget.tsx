@@ -3,84 +3,92 @@
  * @module components/manage/Widgets/RerCaptchaWidget
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, type DefaultRootState } from 'react-redux';
+// eslint-disable-next-line import/no-unresolved
 import RerCapWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/CapJsWidget';
-import { useIntl, defineMessages } from 'react-intl';
+// eslint-disable-next-line import/no-unresolved
+import CaptchaPendingFeedback, {
+  type CaptchaPendingFeedbackVariant,
+  // eslint-disable-next-line import/no-unresolved
+} from '@regioneer/volto-collective-rercaptcha/components/Widget/CaptchaPendingFeedback';
+// eslint-disable-next-line import/no-unresolved
+import { useRerCaptchaData } from '@regioneer/volto-collective-rercaptcha/hooks/useRerCaptchaShowButton';
+import {
+  useRerCaptchaEngine,
+  type CaptchaTokenValue,
+  type RerCaptchaEngineHandle,
+} from './useRerCaptchaEngine';
+import CaptchaCheckControl from './CaptchaCheckControl';
+import type { MutableRefObject, Ref } from 'react';
 
-const messages = defineMessages({
-  captchaError: {
-    id: 'rercaptcha_error',
-    defaultMessage: 'Errore nella verifica del captcha',
-  },
-});
-
-interface Data {
-  '@components': {
-    'rercaptcha-data': {
-      '@id': string;
-      'captcha-url': string;
-    };
-  };
-}
-
-interface State extends DefaultRootState {
-  content: {
-    data: Data;
-  };
+interface RerCaptchaWidgetProps {
+  id: string;
+  /** Ref condivisa col resto del form (es. Captcha.jsx del Blocco Form):
+   * opzionale, non tutti i chiamanti la passano (vedi useRerCaptchaEngine). */
+  captchaToken?: MutableRefObject<CaptchaTokenValue | null>;
+  /** Se passata, il widget esce dalla modalità legacy (eager al mount) ed
+   * espone execute()/reset() al chiamante. */
+  captchaRef?: Ref<RerCaptchaEngineHandle>;
+  onChangeFormData: (
+    id: string,
+    field: string,
+    value: string,
+    extra: { label: string },
+  ) => void;
+  /** Errore di validazione Volto (es. campo obbligatorio), non il dettaglio
+   * tecnico di un fallimento del calcolo (quello va in un toast). */
+  errorMessage?: string;
+  pendingFeedbackVariant?: CaptchaPendingFeedbackVariant;
 }
 
 /**
  * RerCaptchaWidget: Wrapper per integrare il captcha PoW nei form di Volto.
- * Implementa forwardRef per permettere il reset manuale dall'esterno.
+ *
+ * Due modalità, decise dal flag `show-button` esposto dal backend insieme
+ * agli altri dati del captcha (`rercaptcha-data`):
+ * - invisibile (default): il calcolo non parte da solo. Il chiamante lo
+ *   avvia invocando `captchaRef.current.execute({ async: true })`,
+ *   tipicamente al submit del form.
+ * - bottone esplicito: viene mostrato un checkbox che l'utente deve
+ *   cliccare; il form resta bloccato (token assente) finché non lo fa.
+ *
+ * Questo nuovo comportamento è attivo solo per chi passa la prop
+ * `captchaRef` (oggi: Blocco Form, Customer Satisfaction, Newsletter). Chi
+ * non la passa continua a ricevere il comportamento storico (calcolo
+ * avviato subito al mount) — oggi solo il blocco demo `CaptchaTest`.
+ *
+ * La macchina a stati vera e propria vive in `useRerCaptchaEngine`, la
+ * modalità bottone in `CaptchaCheckControl`: questo componente li assembla.
  */
-const RerCaptchaWidget = (props) => {
-  const { id, captchaToken, onChangeFormData, errorMessage } = props;
-  const rerCaptchaData =
-    useSelector(
-      (state: State) =>
-        state.content?.data?.['@components']?.['rercaptcha-data'],
-    ) || null;
+const RerCaptchaWidget = ({
+  id,
+  captchaToken,
+  captchaRef,
+  onChangeFormData,
+  errorMessage,
+  pendingFeedbackVariant = 'inline',
+}: RerCaptchaWidgetProps) => {
+  const isLegacyMode = !captchaRef;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isSolving, setIsSolving] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState(null);
-  const intl = useIntl();
-
-  // Garantisce che l'inizializzazione del campo avvenga una sola volta al mount
-  const initializedRef = useRef(false);
-
-  // Endpoint API
+  const rerCaptchaData = useRerCaptchaData();
   const endpoint = rerCaptchaData?.['captcha-url'];
+  const showCheckButton = !isLegacyMode && !!rerCaptchaData?.['show-button'];
 
-  /**
-   * Formatta il token per il backend di Plone.
-   */
-  const createToken = (id, value) => {
-    const token = {
-      id: id,
-      value: value,
-    };
-    return token;
-  };
-
-  /**
-   * Effetto di inizializzazione al montaggio del componente.
-   */
-  useEffect(() => {
-    if (!initializedRef.current) {
-      initializedRef.current = true;
-
-      // Resettiamo il token per forzare la validazione fallita all'avvio
-      if (captchaToken) {
-        captchaToken.current = null;
-      }
-
-      onChangeFormData(id, id, '', { label: id });
-    }
-  }, [id, captchaToken, onChangeFormData]);
+  const {
+    status,
+    showPendingFeedback,
+    generation,
+    engineRef,
+    handleSolve,
+    handleError,
+    execute,
+    reset,
+  } = useRerCaptchaEngine({
+    id,
+    endpoint,
+    captchaToken,
+    captchaRef,
+    onChangeFormData,
+  });
 
   if (!rerCaptchaData) {
     // eslint-disable-next-line no-console
@@ -91,55 +99,51 @@ const RerCaptchaWidget = (props) => {
   }
 
   return (
-    <div className="rercap-widget-container" id={`field-${id}`}>
+    <div
+      className="rercap-widget-container"
+      id={`field-${id}`}
+      // In modalità bottone il widget deve poter stare in linea prima del
+      // bottone di submit (posizionamento gestito da chi lo consuma), con
+      // un minimo di distanza da esso: marginRight, non marginLeft, perché
+      // il widget precede il bottone nel DOM (vedi FormView.jsx/Channel.jsx).
+      style={
+        showCheckButton
+          ? { display: 'inline-flex', marginRight: '0.75em' }
+          : undefined
+      }
+    >
       <RerCapWidget
+        key={generation}
+        ref={engineRef}
         endpoint={endpoint}
-        onProgress={(p) => setProgress(p)}
-        onSolve={(value) => {
-          setIsSolving(false);
-          setError(null);
-
-          // Sblocchiamo il form impostando il token nel ref
-          if (captchaToken) {
-            captchaToken.current = createToken(id, value);
-          }
-
-          // Aggiorniamo il valore nel payload del form
-          onChangeFormData(id, id, value, { label: id });
-        }}
-        onError={(err) => {
-          setIsSolving(false);
-          setError(err);
-          if (captchaToken) {
-            captchaToken.current = null;
-          }
-        }}
+        autoStart={isLegacyMode}
+        onSolve={handleSolve}
+        onError={handleError}
+        // Il token è scaduto (Cap emette 'reset' alla scadenza di
+        // resp.expires): riusiamo lo stesso reset() esposto al chiamante,
+        // che rimette lo stato a idle, pulisce il token e rimonta il motore
+        // per calcolarne uno nuovo.
+        onReset={reset}
       />
 
-      {/* Messaggio di stato durante il calcolo */}
-      {/*       {isSolving && (
-        <div
-          className="rercap-status-info"
-          style={{
-            fontSize: '0.9em',
-            color: '#666',
-            marginTop: '5px',
-            fontStyle: 'italic',
-          }}
-        >
-          Verifica di sicurezza in corso: {Math.round(progress)}%
-        </div>
-      )} */}
+      {showCheckButton && (
+        <CaptchaCheckControl status={status} onExecute={() => execute()} />
+      )}
 
-      {/* Messaggi di errore (tecnici o di validazione Volto) */}
-      {(error || errorMessage) && (
+      {/* Il feedback "ci sto mettendo più del previsto" ha senso solo in
+          modalità invisibile: col bottone esplicito lo stato è già visibile
+          sul bottone stesso. */}
+      <CaptchaPendingFeedback
+        active={!showCheckButton && showPendingFeedback}
+        variant={pendingFeedbackVariant}
+      />
+
+      {errorMessage && (
         <div
           className="rercap-error-info"
           style={{ fontSize: '0.9em', color: '#db2828', marginTop: '5px' }}
         >
-          {error
-            ? `${intl.formatMessage(messages.captchaError)}: ${error}`
-            : errorMessage}
+          {errorMessage}
         </div>
       )}
     </div>

@@ -1,7 +1,26 @@
-/* CUSTOMIZATIONS: 
+/* CUSTOMIZATIONS:
   - aggiunta del rercaptcha di collective-rercaptcha, che viene mostrato solo se l'utente ha espresso un voto
+  - il calcolo del captcha parte al click sul bottone finale "Avanti/Invia",
+    non più alla scelta del voto a stelle: RerCaptchaWidget riceve una
+    captchaRef ed è sendFormData a invocare execute() al momento giusto
+  - RerCaptchaWidget si renderizza solo nell'ultimo step, sopra la riga dei
+    bottoni prev/next (non più al loro interno, né sotto): sia perché il
+    messaggio di attesa "Attendi, stiamo verificando..." occupa spazio a
+    flusso normale solo quando compare, e se fosse dentro la riga flex
+    centrata dei bottoni (`justify-content-center`) il suo comparire/sparire
+    ricentrerebbe la riga facendo "saltare" i bottoni; sia per il tab order
+    in modalità bottone esplicito, dove il widget precede anche nel DOM il
+    bottone finale
+  - in modalità bottone esplicito (flag `show-button`) il bottone finale
+    resta bloccato finché la verifica non è completata; in modalità
+    invisibile (default) resta sempre cliccabile
+  - il captcha si attiva solo se `@feedback-add` è tra le "Azioni
+    controllate" (`whitelisted_routes`) del pannello di controllo di
+    rercaptcha: stessa lista che il backend usa per l'enforcement, non un
+    flag dedicato (a differenza del Blocco Form, che ha il proprio campo
+    "Captcha provider")
 */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useIntl, defineMessages } from 'react-intl';
@@ -29,6 +48,11 @@ import {
 } from 'volto-feedback';
 // eslint-disable-next-line import/no-unresolved
 import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+import {
+  useRerCaptchaShowButton,
+  useRerCaptchaActionEnabled,
+  // eslint-disable-next-line import/no-unresolved
+} from '@regioneer/volto-collective-rercaptcha/hooks/useRerCaptchaShowButton';
 import cx from 'classnames';
 // eslint-disable-next-line import/no-unresolved
 import AnswersStep from 'design-comuni-plone-theme/components/ItaliaTheme/CustomerSatisfaction/Steps/AnswersStep';
@@ -149,6 +173,15 @@ const FeedbackForm = ({ title, pathname }) => {
   const submitResults = useSelector((state) => state.submitFeedback);
   const [validToken, setValidToken] = useState(null);
   const threshold = getFeedbackThreshold();
+  // captchaRef: passata a RerCaptchaWidget per farlo uscire dalla modalità
+  // legacy (eager al mount) ed entrare in quella lazy, dove è sendFormData
+  // a decidere quando avviare il calcolo (execute()).
+  const rerCaptchaRef = useRef();
+  // In modalità bottone esplicito il submit va tenuto bloccato finché la
+  // verifica non è completata; in modalità invisibile (default) resta
+  // sempre cliccabile, altrimenti il token non potrebbe mai generarsi.
+  const rercaptchaShowsOwnButton = useRerCaptchaShowButton();
+  const rercaptchaEnabled = useRerCaptchaActionEnabled('@feedback-add');
 
   const fieldHoney = __CLIENT__
     ? window.env.RAZZLE_HONEYPOT_FIELD
@@ -175,6 +208,12 @@ const FeedbackForm = ({ title, pathname }) => {
   };
   const getFormFieldValue = (field) => formData?.[field] ?? undefined;
   const currentVote = getFormFieldValue('vote');
+  // Modalità bottone esplicito e verifica non ancora completata: il submit
+  // va tenuto bloccato (vedi rercaptchaShowsOwnButton più sopra).
+  const rerCaptchaBlocksSubmit =
+    rercaptchaEnabled &&
+    rercaptchaShowsOwnButton &&
+    !getFormFieldValue('capjs-token');
 
   const nextStep = () => {
     if (!invalidForm) setStep(step + 1);
@@ -250,8 +289,21 @@ const FeedbackForm = ({ title, pathname }) => {
     });
   };
 
-  const sendFormData = () => {
+  const sendFormData = async () => {
     if (invalidForm) return;
+    // In modalità bottone esplicito il submit resta bloccato finché la
+    // verifica non è completata (in modalità invisibile capjs-token non
+    // esiste ancora a questo punto: è execute(), qui sotto, a generarlo).
+    if (rerCaptchaBlocksSubmit) return;
+
+    // Il calcolo rercaptcha parte solo ora, non prima: usiamo il valore
+    // risolto dalla Promise direttamente (non rileggiamo formData dopo
+    // l'attesa, per evitare di leggere una versione non ancora aggiornata
+    // dello stato per via della chiusura di questa funzione).
+    const rerCaptchaToken = rercaptchaEnabled
+      ? await rerCaptchaRef.current?.execute({ async: true })
+      : undefined;
+
     setStep(2);
     let content =
       isFeedbackEnabledForRoute(path) && isCmsUi(path)
@@ -262,6 +314,7 @@ const FeedbackForm = ({ title, pathname }) => {
 
     const data = {
       ...formData,
+      ...(rercaptchaEnabled && { 'capjs-token': rerCaptchaToken }),
       ...(googleRecaptcha && { 'g-recaptcha-response': validToken }),
       answer: getTranslatedQuestion(intl, formData.answer),
       content,
@@ -370,15 +423,19 @@ const FeedbackForm = ({ title, pathname }) => {
                         onVerify={onVerifyCaptcha}
                         action={action}
                       />
-                      {/* CUSTOMIZATIONS: render rercaptcha */}
-                      {currentVote !== undefined && (
-                        <RerCaptchaWidget
-                          id={'capjs-token'}
-                          onChangeFormData={(id, label, value) => {
-                            updateFormData(id, value);
-                          }}
-                        />
-                      )}
+                      {step === numberOfSteps - 1 &&
+                        rercaptchaEnabled &&
+                        currentVote !== undefined && (
+                          <div className="d-flex justify-content-center">
+                            <RerCaptchaWidget
+                              id={'capjs-token'}
+                              captchaRef={rerCaptchaRef}
+                              onChangeFormData={(id, label, value) => {
+                                updateFormData(id, value);
+                              }}
+                            />
+                          </div>
+                        )}
                       <div
                         className={cx(
                           'form-step-actions flex-nowrap w100 justify-content-center button-shadow',
@@ -406,7 +463,6 @@ const FeedbackForm = ({ title, pathname }) => {
                         >
                           {intl.formatMessage(messages.prev)}
                         </button>
-
                         {step !== numberOfSteps - 1 && (
                           <button
                             type="button"
@@ -423,14 +479,20 @@ const FeedbackForm = ({ title, pathname }) => {
                         {step === numberOfSteps - 1 && (
                           <button
                             className={cx('fw-bold btn btn-primary', {
-                              disabled: invalidForm,
+                              disabled: invalidForm || rerCaptchaBlocksSubmit,
                             })}
                             type="submit"
                             disabled={false}
-                            aria-disabled={invalidForm}
+                            aria-disabled={
+                              invalidForm || rerCaptchaBlocksSubmit
+                            }
                             onClick={sendFormData}
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter' && !invalidForm)
+                              if (
+                                e.key === 'Enter' &&
+                                !invalidForm &&
+                                !rerCaptchaBlocksSubmit
+                              )
                                 sendFormData();
                             }}
                           >

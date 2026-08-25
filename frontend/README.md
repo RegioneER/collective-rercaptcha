@@ -6,6 +6,10 @@ Integration with rercaptcha in Plone
 [![](https://img.shields.io/badge/-Storybook-ff4785?logo=Storybook&logoColor=white&style=flat-square)](https://collective.github.io/volto-collective-rercaptcha/)
 [![CI](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml/badge.svg)](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml)
 
+For how the captcha widget works (invisible/button mode, architecture,
+how to integrate it in a new form), see
+[packages/volto-collective-rercaptcha/docs/README.md](./packages/volto-collective-rercaptcha/docs/README.md).
+
 
 ## Features
 

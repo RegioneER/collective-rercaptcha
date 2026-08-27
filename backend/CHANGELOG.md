@@ -9,6 +9,18 @@
 
 <!-- towncrier release notes start -->
 
+## 1.0.0a26 (2026-08-27)
+
+No significant changes.
+
+
+## 1.0.0a25 (2026-08-26)
+
+
+### New features:
+
+- Expose `whitelisted_routes` in the `rercaptcha-data` expander, so the frontend can decide per integration point (Customer Satisfaction, Newsletter) whether to activate the captcha, matching what the backend actually enforces. 
+
 ## 1.0.0a24 (2026-08-13)
 
 

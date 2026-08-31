@@ -62,7 +62,10 @@ class IRerCaptchaSettings(IControlpanel):
             "For example: @foo",
         ),
         required=False,
-        value_type=schema.TextLine(),
+        value_type=schema.Choice(
+                    title=_(""),
+                    values=["feedback-add", "subscribe-newsletter", "unsubscribe-newsletter"],
+                ),
         default=[],
     )
 

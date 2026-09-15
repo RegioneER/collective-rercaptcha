@@ -14,6 +14,10 @@
   - in modalità bottone esplicito (flag `show-button`) il bottone finale
     resta bloccato finché la verifica non è completata; in modalità
     invisibile (default) resta sempre cliccabile
+  - `requiredMarker="text"`: la checkbox di verifica è marcata come
+    obbligatoria per esteso ("(obbligatorio)") e non con un asterisco —
+    qui non c'è nessun altro campo con l'asterisco, né una legenda che lo
+    spieghi (vedi `CaptchaRequiredMarker`)
   - il captcha si attiva solo se `@feedback-add` è tra le "Azioni
     controllate" (`whitelisted_routes`) del pannello di controllo di
     rercaptcha: stessa lista che il backend usa per l'enforcement, non un
@@ -430,6 +434,7 @@ const FeedbackForm = ({ title, pathname }) => {
                             <RerCaptchaWidget
                               id={'capjs-token'}
                               captchaRef={rerCaptchaRef}
+                              requiredMarker="text"
                               onChangeFormData={(id, label, value) => {
                                 updateFormData(id, value);
                               }}

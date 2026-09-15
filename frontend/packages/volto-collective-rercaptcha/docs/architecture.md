@@ -75,6 +75,17 @@ The icons are Unicode symbols with inline color (✓/✕/↻), not
 that isn't loaded on the public theme (Bootstrap Italia), so it would
 stay invisible — `Loader` is fine instead (pure CSS, no font).
 
+How the checkbox is marked as required depends on the `requiredMarker`
+prop, forwarded by `RerCaptchaWidget` from the caller:
+
+- `asterisk` (default) — `* Conferma di non essere un robot`, for forms
+  where the asterisk is already the convention used by the other required
+  fields (Form block);
+- `text` — `Conferma di non essere un robot (obbligatorio)`, for forms
+  where the captcha is the only marked field and a lone asterisk, with no
+  legend explaining it, is meaningless (Customer Satisfaction,
+  Newsletter).
+
 ### `RerCaptchaWidget.tsx`
 
 The component used inside forms. Decides the mode by reading

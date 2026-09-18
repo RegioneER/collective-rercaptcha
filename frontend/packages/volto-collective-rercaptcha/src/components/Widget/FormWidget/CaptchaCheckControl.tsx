@@ -7,6 +7,10 @@ const messages = defineMessages({
     id: 'rercaptcha_check_button_idle',
     defaultMessage: '* Conferma di non essere un robot',
   },
+  checkButtonIdleRequiredText: {
+    id: 'rercaptcha_check_button_idle_required_text',
+    defaultMessage: 'Conferma di non essere un robot (obbligatorio)',
+  },
   checkButtonSolving: {
     id: 'rercaptcha_check_button_solving',
     defaultMessage: 'Verifica in corso…',
@@ -31,10 +35,23 @@ const rowStyle = {
   gap: '0.4em',
 } as const;
 
+/**
+ * Come segnalare che la verifica è obbligatoria:
+ * - `asterisk`: `* Conferma di non essere un robot`, per i form dove
+ *   l'asterisco è già la convenzione usata dagli altri campi obbligatori
+ *   (Blocco Form);
+ * - `text`: `Conferma di non essere un robot (obbligatorio)`, per i form
+ *   dove il captcha è l'unico campo marcato e un asterisco isolato, senza
+ *   legenda che lo spieghi, non si capisce (Customer Satisfaction,
+ *   Newsletter).
+ */
+export type CaptchaRequiredMarker = 'asterisk' | 'text';
+
 interface CaptchaCheckControlProps {
   status: CaptchaStatus;
   /** Avvia (o rilancia, in caso di errore) il calcolo. */
   onExecute: () => void;
+  requiredMarker?: CaptchaRequiredMarker;
 }
 
 /**
@@ -48,6 +65,7 @@ interface CaptchaCheckControlProps {
 const CaptchaCheckControl = ({
   status,
   onExecute,
+  requiredMarker = 'asterisk',
 }: CaptchaCheckControlProps) => {
   const intl = useIntl();
 
@@ -115,7 +133,9 @@ const CaptchaCheckControl = ({
       {intl.formatMessage(
         status === 'solving'
           ? messages.checkButtonSolving
-          : messages.checkButtonIdle,
+          : requiredMarker === 'text'
+            ? messages.checkButtonIdleRequiredText
+            : messages.checkButtonIdle,
       )}
     </label>
   );

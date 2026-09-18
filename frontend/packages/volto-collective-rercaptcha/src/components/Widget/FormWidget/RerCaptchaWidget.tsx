@@ -17,7 +17,9 @@ import {
   type CaptchaTokenValue,
   type RerCaptchaEngineHandle,
 } from './useRerCaptchaEngine';
-import CaptchaCheckControl from './CaptchaCheckControl';
+import CaptchaCheckControl, {
+  type CaptchaRequiredMarker,
+} from './CaptchaCheckControl';
 import type { MutableRefObject, Ref } from 'react';
 
 interface RerCaptchaWidgetProps {
@@ -38,6 +40,10 @@ interface RerCaptchaWidgetProps {
    * tecnico di un fallimento del calcolo (quello va in un toast). */
   errorMessage?: string;
   pendingFeedbackVariant?: CaptchaPendingFeedbackVariant;
+  /** Come marcare come obbligatoria la checkbox di verifica (modalità
+   * bottone esplicito): asterisco, o "(obbligatorio)" per esteso. Vedi
+   * `CaptchaRequiredMarker`. */
+  requiredMarker?: CaptchaRequiredMarker;
 }
 
 /**
@@ -66,6 +72,7 @@ const RerCaptchaWidget = ({
   onChangeFormData,
   errorMessage,
   pendingFeedbackVariant = 'inline',
+  requiredMarker = 'asterisk',
 }: RerCaptchaWidgetProps) => {
   const isLegacyMode = !captchaRef;
 
@@ -127,7 +134,11 @@ const RerCaptchaWidget = ({
       />
 
       {showCheckButton && (
-        <CaptchaCheckControl status={status} onExecute={() => execute()} />
+        <CaptchaCheckControl
+          status={status}
+          onExecute={() => execute()}
+          requiredMarker={requiredMarker}
+        />
       )}
 
       {/* Il feedback "ci sto mettendo più del previsto" ha senso solo in

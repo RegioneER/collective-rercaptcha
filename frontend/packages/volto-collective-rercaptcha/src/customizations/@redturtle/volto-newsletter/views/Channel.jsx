@@ -22,6 +22,10 @@
     resta disabilitato finché la verifica non è completata; in modalità
     invisibile (default) resta sempre cliccabile, come richiesto dal punto
     sopra sul calcolo al click
+  - `requiredMarker="text"`: la checkbox di verifica è marcata come
+    obbligatoria per esteso ("(obbligatorio)") e non con un asterisco —
+    qui non c'è nessun altro campo con l'asterisco, né una legenda che lo
+    spieghi (vedi `CaptchaRequiredMarker`)
   - iscrizione e cancellazione si attivano indipendentemente, in base alla
     presenza rispettivamente di `@subscribe-newsletter` e
     `@unsubscribe-newsletter` tra le "Azioni controllate"
@@ -384,6 +388,7 @@ const Channel = ({ content, location }) => {
                           key={`subscribe-rercaptcha-${subRerCaptchaAttempt}`}
                           id={'capjs-token'}
                           captchaRef={subCaptchaRef}
+                          requiredMarker="text"
                           onChangeFormData={(id, label, value) => {
                             setSubRerCaptchaToken(value);
                           }}
@@ -478,6 +483,7 @@ const Channel = ({ content, location }) => {
                         key={`unsubscribe-rercaptcha-${unsubRerCaptchaAttempt}`}
                         id={'capjs-token'}
                         captchaRef={unsubCaptchaRef}
+                        requiredMarker="text"
                         onChangeFormData={(id, label, value) => {
                           setUnsubRerCaptchaToken(value);
                         }}

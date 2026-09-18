@@ -1,86 +1,77 @@
 #!/bin/bash
+# Aggiorna versioni e changelog, e crea il tag.
+#
+# Non pubblica niente: repository.toml ha `publish = false` sia in
+# [backend.package] sia in [frontend.package], e ai due pacchetti pensa la CI
+# al push del tag (.github/workflows/pypi.yml e npm.yml), autenticandosi via
+# OIDC. Per questo qui non serve nessun token: ne' UV_PUBLISH_TOKEN, ne' un
+# token npm, che per giunta scadrebbe ogni 90 giorni.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 echo "==============================================="
-echo "Collective RereCaptcha Release Process"
+echo "Release collective-rercaptcha"
 echo "==============================================="
-echo ""
 
-# Check required environment variables
-echo "Checking required environment variables..."
-#REQUIRED_VARS=("UV_PUBLISH_TOKEN")
-#for var in "${REQUIRED_VARS[@]}"; do
-#    if [ -z "${!var}" ]; then
-#        echo "❌ Error: $var is not set"
-#        echo ""
-#        echo "Please set the following environment variables:"
-#        echo "  export UV_PUBLISH_TOKEN='your-pypi-token'"
-#        echo "  export GITHUB_TOKEN='your-github-token'  # optional, for GitHub releases"
-#        exit 1
-#    fi
-#done
-echo "✅ Required environment variables are set"
-echo ""
+# Promemoria, non un controllo: la configurazione del trusted publishing si
+# vede alla generazione del repo, che puo' essere di mesi prima, e non nel
+# momento in cui serve. Se manca, i workflow falliscono a tag GIA' creato.
+# Non blocca di proposito: lo stato npm sarebbe verificabile, quello del
+# pending publisher PyPI no, e una release legittima non deve dipendere da
+# mezza verifica.
+cat <<'PREREQ'
 
-# Setup Node.js
-echo "Setting up Node.js environment..."
-if command -v nvm &> /dev/null; then
-    nvm use
-    echo "✅ Switched to Node.js version from .nvmrc"
-elif [ -n "${NVM_DIR:-}" ] && [ -s "${NVM_DIR}/nvm.sh" ]; then
-    # Load nvm in non-interactive shells.
-    # shellcheck disable=SC1090
-    . "${NVM_DIR}/nvm.sh"
-    nvm use
-    echo "✅ Switched to Node.js version from .nvmrc"
-elif [ -s "$HOME/.nvm/nvm.sh" ]; then
-    # Common default nvm installation path.
+Prerequisiti di pubblicazione, una tantum (non verificati qui)
+
+  npm    @regioneer/volto-collective-rercaptcha
+         il pacchetto deve esistere su npm e avere il trusted publisher
+         puntato su `npm.yml`. Se non l'hai mai fatto:  make bootstrap-npm
+
+  PyPI   collective.rercaptcha
+         serve un pending publisher su pypi.org -> Publishing, con workflow
+         `pypi.yml`. PyPI lo accetta anche prima che il progetto esista.
+
+Senza, il tag viene creato e le publish falliscono: in quel caso non rifare la
+release, rilancia da GitHub Actions il workflow fallito passando il tag.
+
+PREREQ
+
+# Nessun token richiesto per pubblicare. Resta opzionale GITHUB_TOKEN, che
+# serve solo a creare la GitHub release: senza, repoplone la salta e avvisa.
+
+# repoplone aggiorna anche versione e changelog del pacchetto frontend, quindi
+# node serve comunque, pur senza pubblicare su npm.
+if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
     # shellcheck disable=SC1091
-    . "$HOME/.nvm/nvm.sh"
+    . "${NVM_DIR:-$HOME/.nvm}/nvm.sh"
     nvm use
-    echo "✅ Switched to Node.js version from .nvmrc"
 else
-    echo "⚠️  nvm not found, using current Node.js"
+    echo "⚠️  nvm non trovato, uso il node corrente: $(node --version)"
 fi
 
-CURRENT_NODE_VERSION="$(node --version)"
-echo "   Current Node.js version: ${CURRENT_NODE_VERSION}"
 node -e 'const [maj, min] = process.versions.node.split(".").map(Number); if (maj < 18 || (maj === 18 && min < 12)) process.exit(1);' || {
-    echo "❌ Node.js ${CURRENT_NODE_VERSION} is too old for pnpm (requires >= 18.12)"
-    echo "   Install nvm and run: nvm use"
+    echo "❌ Node $(node --version) troppo vecchio per pnpm (serve >= 18.12)."
     exit 1
 }
-echo ""
 
-# Verify npm authentication - DISABLED because we publish it via github actions, which handles authentication automatically. If you want to enable this check, uncomment the following lines.
-# echo "Verifying npm authentication..."
-# npm whoami > /dev/null 2>&1 || {
-#     echo "❌ npm authentication failed"
-#     echo "Please run: npm login"
-#     exit 1
-# }
-# echo "✅ npm authentication verified"
-# echo ""
-
-# Install frontend dependencies
-echo "Installing frontend dependencies..."
+echo "==> Installo le dipendenze del frontend"
 cd "${REPO_ROOT}/frontend"
 pnpm install
-echo "✅ Frontend dependencies installed"
-echo ""
 
-# Go back to root
 cd "${REPO_ROOT}"
-
-# Run release
-echo "Starting release process..."
-echo ""
+echo "==> repoplone release"
 uvx repoplone release
 
 echo ""
 echo "==============================================="
-echo "✅ Release completed successfully!"
+echo "✅ Versioni, changelog e tag creati."
+echo ""
+echo "I pacchetti li pubblica la CI al push del tag:"
+echo "  backend  -> PyPI  ('Release latest version on PyPI')"
+echo "  frontend -> npm   ('Release latest version on npm')"
+echo ""
+echo "Se uno dei due workflow fallisce, NON rifare la release: rilancia quel"
+echo "workflow da GitHub Actions indicando il tag."
 echo "==============================================="

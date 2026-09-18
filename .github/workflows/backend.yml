@@ -49,28 +49,6 @@ jobs:
       plone-version: ${{ inputs.plone-version }}
       working-directory: ${{ inputs.working-directory }}
 
-  release:
-    name: "Backend: Build and publish Container Image"
-    uses: plone/meta/.github/workflows/container-image-build-push.yml@2.x
-    needs:
-      - lint
-      - test
-      - coverage
-    permissions:
-      contents: read
-      packages: write
-    with:
-      base-tag: ${{ inputs.base-tag }}
-      image-name-prefix: ${{ inputs.image-name-prefix }}
-      image-name-suffix: ${{ inputs.image-name-suffix }}
-      working-directory: ${{ inputs.working-directory }}
-      build-args: |
-        PLONE_VERSION=${{ inputs.plone-version }}
-      push: ${{ github.event_name != 'pull_request' }}
-    secrets:
-      username: ${{ github.actor }}
-      password: ${{ secrets.GITHUB_TOKEN }}
-
   report:
     name: "Final report"
     if: ${{ always() }}
@@ -79,7 +57,6 @@ jobs:
       - lint
       - test
       - coverage
-      - release
     steps:
       - name: Write report
         run: |
@@ -89,4 +66,3 @@ jobs:
           echo '| lint | ${{ needs.lint.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| test | ${{ needs.test.result }} |' >> $GITHUB_STEP_SUMMARY
           echo '| coverage | ${{ needs.coverage.result }} |' >> $GITHUB_STEP_SUMMARY
-          echo '| release | ${{ needs.release.result }} |' >> $GITHUB_STEP_SUMMARY

@@ -7,6 +7,29 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a28 (2026-09-18)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+No significant changes.
+
+
+### Project
+
+
+#### Internal
+
+- Fix ci deploy and add auto release on pypi 
+
+
+
 ## 1.0.0a27 (2026-09-07)
 
 ### Backend

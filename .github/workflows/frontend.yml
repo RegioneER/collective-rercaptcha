@@ -70,7 +70,6 @@ jobs:
       - i18n
       - unit
       # - storybook
-      - release
     steps:
       - name: Write report
         run: |

@@ -1,199 +1,189 @@
-# collective-rercaptcha (volto-collective-rercaptcha)
+# collective-rercaptcha (@regioneer/volto-collective-rercaptcha)
 
-Integration with rercaptcha in Plone
+Volto add-on that protects public forms from spam with a privacy-friendly, proof-of-work captcha based on [Cap](https://capjs.js.org/).
 
-[![npm](https://img.shields.io/npm/v/volto-collective-rercaptcha)](https://www.npmjs.com/package/volto-collective-rercaptcha)
-[![](https://img.shields.io/badge/-Storybook-ff4785?logo=Storybook&logoColor=white&style=flat-square)](https://collective.github.io/volto-collective-rercaptcha/)
+[![npm](https://img.shields.io/npm/v/@regioneer/volto-collective-rercaptcha)](https://www.npmjs.com/package/@regioneer/volto-collective-rercaptcha)
 [![CI](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml/badge.svg)](https://github.com/RegioneER/collective-rercaptcha/actions/workflows/main.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
-For how the captcha widget works (invisible/button mode, architecture,
-how to integrate it in a new form), see
-[packages/volto-collective-rercaptcha/docs/README.md](./packages/volto-collective-rercaptcha/docs/README.md).
-
+This is the frontend part of [collective-rercaptcha](https://github.com/RegioneER/collective-rercaptcha).
+It works together with the Plone add-on [`collective.rercaptcha`](https://github.com/RegioneER/collective-rercaptcha/tree/main/backend), which holds the configuration and verifies the tokens on the server.
 
 ## Features
 
-<!-- List your awesome features here -->
+- **No images or puzzles to solve.** The browser proves it is not a bot by solving a small SHA-256 proof-of-work in Web Workers, using [`@cap.js/widget`](https://www.npmjs.com/package/@cap.js/widget). No third-party tracking service is involved: the browser talks only to your own Cap server.
+- **Two modes**, chosen by the site administrator in the Plone control panel:
+  - **Invisible** (default): nothing is shown to the user. The proof-of-work starts when the form is submitted, and a "please wait" message appears only if it takes longer than a moment.
+  - **Button**: the user clicks an "I'm not a robot" checkbox before submitting. The checkbox shows when the verification succeeds or fails, and lets the user retry.
+- **Ready-made integrations** with common Plone/Volto add-ons:
+  - [`volto-form-block`](https://www.npmjs.com/package/volto-form-block): adds `rercaptcha` as a captcha provider for form blocks.
+  - [`design-comuni-plone-theme`](https://github.com/RedTurtle/design-comuni-plone-theme): protects the Customer Satisfaction feedback form.
+  - [`@redturtle/volto-newsletter`](https://www.npmjs.com/package/@redturtle/volto-newsletter): protects the subscribe and unsubscribe forms of newsletter channels.
+- **Reusable components and hooks** to add the captcha to your own forms.
+- **Per-route activation**: the captcha is required only on the endpoints listed in the backend configuration.
+
+## Requirements
+
+| Component | Version |
+| --- | --- |
+| Volto | 18 |
+| React | 17 or 18 |
+| Node.js | 22 |
+| Plone backend | 6.1, with [`collective.rercaptcha`](https://github.com/RegioneER/collective-rercaptcha/tree/main/backend) installed |
+| Cap server | a running [Cap standalone server](https://capjs.js.org/guide/standalone.html), reachable from the users' browsers |
+
+Peer dependencies: `volto-form-block` 3.17.1, `volto-feedback` 0.7.2, `design-react-kit` 5.0.0-1, `reactstrap` 9 and `react-toastify` 5.
 
 ## Installation
 
-To install your project, you must choose the method appropriate to your version of Volto.
+### 1. Backend
 
+Install the `collective.rercaptcha` Python package in your Plone backend and activate it in the add-ons control panel (or import the `collective.rercaptcha:default` profile).
 
-### Volto 18 and later
+To use the captcha with `volto-form-block`, the backend also needs [`collective.volto.formsupport`](https://pypi.org/project/collective.volto.formsupport/).
 
-Add `volto-collective-rercaptcha` to your `package.json`.
+### 2. Frontend
 
-```json
-"dependencies": {
-    "volto-collective-rercaptcha": "*"
-}
+Add the package to the dependencies of your Volto project:
+
+```shell
+pnpm add @regioneer/volto-collective-rercaptcha
 ```
 
-Add `volto-collective-rercaptcha` to your `volto.config.js`.
+Then add it to the add-ons in your `volto.config.js`.
+List it **after** the add-ons it customizes, such as `volto-form-block`:
 
 ```javascript
-const addons = ['volto-collective-rercaptcha'];
+const addons = [
+  'volto-form-block',
+  // ...
+  '@regioneer/volto-collective-rercaptcha',
+];
 ```
 
-If this package provides a Volto theme, and you want to activate it, then add the following to your `volto.config.js`.
+## Configuration
 
-```javascript
-const theme = 'volto-collective-rercaptcha';
+All the settings live in the backend, in the **RerCaptcha** control panel of Plone:
+
+| Setting | Description |
+| --- | --- |
+| Use captcha | Enables the captcha on the site |
+| Show button | Uses the button mode instead of the invisible one |
+| Captcha URI | Base URL of your Cap server |
+| Site key | Site key of the Cap server |
+| Secret | Secret key, used only by the backend to verify the tokens |
+| Whitelisted routes | The endpoints that require a valid captcha, for example `@submit-form`, `@feedback-add`, `@subscribe-newsletter`, `@unsubscribe-newsletter` |
+
+The frontend reads the public part of this configuration from the `rercaptcha-data` component of the content response (`@components`).
+
+When the captcha is enabled and configured, the backend rejects any `POST` to a whitelisted route without a valid token (`400` if the token is missing, `403` if it is not valid).
+Otherwise it does not check any request.
+
+### With volto-form-block
+
+Once the add-on is installed and configured, choose **rercaptcha** as the captcha of a form block in the block settings, and add `@submit-form` to the whitelisted routes.
+
+## Using the captcha in your own forms
+
+Render `RerCaptchaWidget` in your form and pass it a ref.
+When the form is submitted, validate the other fields first, then ask the widget for a token and send it in the request body as `capjs-token`:
+
+```jsx
+import { useRef } from 'react';
+import RerCaptchaWidget from '@regioneer/volto-collective-rercaptcha/components/Widget/FormWidget/RerCaptchaWidget';
+
+const MyForm = () => {
+  const captchaRef = useRef();
+
+  const handleSubmit = async () => {
+    if (isInvalid()) return; // validate the other fields first
+
+    const token = await captchaRef.current?.execute({ async: true });
+
+    dispatch(submitSomething({ ...formData, 'capjs-token': token }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* other fields */}
+      <RerCaptchaWidget
+        id="capjs-token"
+        captchaRef={captchaRef}
+        onChangeFormData={(id, label, value) =>
+          setFormData({ ...formData, [id]: value })
+        }
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
 ```
 
-### Volto 17 and earlier
+Some things to keep in mind:
 
-Create a new Volto project.
-You can skip this step if you already have one.
+- Use the token returned by `execute()`, not a value stored in the form state, to avoid stale values.
+- Tokens are single-use: if the form can be submitted again, call `captchaRef.current.reset()` after a successful submit.
+- In button mode the submit button should stay disabled until the user has solved the captcha. Use the `useRerCaptchaShowButton()` hook to know which mode is active, and never block the submit in invisible mode.
+- `useRerCaptchaActionEnabled('@my-route')` tells you whether the captcha is required for a given route.
 
-```
-npm install -g yo @plone/generator-volto
-yo @plone/volto my-volto-project --addon volto-collective-rercaptcha
-cd my-volto-project
-```
+See [how it works](https://github.com/RegioneER/collective-rercaptcha/blob/main/frontend/packages/volto-collective-rercaptcha/docs/how-it-works.md) for all the props and the complete integration guide, and the [architecture notes](https://github.com/RegioneER/collective-rercaptcha/blob/main/frontend/packages/volto-collective-rercaptcha/docs/architecture.md) for the internals.
 
-Add `volto-collective-rercaptcha` to your `package.json`.
+## Exports
 
-```JSON
-"addons": [
-    "volto-collective-rercaptcha"
-],
+| Export | Description |
+| --- | --- |
+| `default` | The Volto add-on configuration |
+| `RerCapWidget` | Low-level, headless wrapper around the Cap widget |
+| `useRerCaptchaData` | Returns the `rercaptcha-data` configuration from the backend |
+| `useRerCaptchaShowButton` | `true` when the button mode is active |
+| `useRerCaptchaActionEnabled` | `true` when the captcha is required for the given route |
+| `components/Widget/FormWidget/RerCaptchaWidget` | The form widget, with invisible and button modes |
 
-"dependencies": {
-    "volto-collective-rercaptcha": "*"
-}
-```
+The add-on also registers a **Captcha Test Block**, useful to check that the Cap server is reachable from the site.
 
-Download and install the new add-on.
+## Links
 
-```
-yarn install
-```
-
-Start Volto.
-
-```
-yarn start
-```
-
-## Test installation
-
-Visit http://localhost:3000/ in a browser, login, and check the awesome new features.
-
+- Source code: <https://github.com/RegioneER/collective-rercaptcha>
+- Issue tracker: <https://github.com/RegioneER/collective-rercaptcha/issues>
+- Backend add-on: [`collective.rercaptcha`](https://github.com/RegioneER/collective-rercaptcha/tree/main/backend)
+- Changelog: [CHANGELOG.md](https://github.com/RegioneER/collective-rercaptcha/blob/main/frontend/packages/volto-collective-rercaptcha/CHANGELOG.md)
+- Cap: <https://capjs.js.org/>
 
 ## Development
 
-The development of this add-on is done in isolation using pnpm workspaces, the latest `mrs-developer`, and other Volto core improvements.
-For these reasons, it only works with pnpm and Volto 18.
+This add-on lives in the [collective-rercaptcha](https://github.com/RegioneER/collective-rercaptcha) monorepo, together with its backend.
+It is developed in isolation with pnpm workspaces and `mrs-developer`.
 
-
-### Prerequisites ✅
-
--   An [operating system](https://6.docs.plone.org/install/create-project-cookieplone.html#prerequisites-for-installation) that runs all the requirements mentioned.
--   [nvm](https://6.docs.plone.org/install/create-project-cookieplone.html#nvm)
--   [Node.js and pnpm](https://6.docs.plone.org/install/create-project.html#node-js) 22
--   [Make](https://6.docs.plone.org/install/create-project-cookieplone.html#make)
--   [Git](https://6.docs.plone.org/install/create-project-cookieplone.html#git)
--   [Docker](https://docs.docker.com/get-started/get-docker/) (optional)
-
-### Installation 🔧
-
-1.  Clone this repository, then change your working directory.
-
-    ```shell
-    git clone git@github.com:RegioneER/collective-rercaptcha.git
-    cd collective-rercaptcha/frontend
-    ```
-
-2.  Install this code base.
-
-    ```shell
-    make install
-    ```
-
-
-### Make convenience commands
-
-Run `make help` to list the available Make commands.
-
-
-### Set up development environment
-
-Install package requirements.
+Prerequisites: [nvm](https://6.docs.plone.org/install/create-project-cookieplone.html#nvm), [Node.js and pnpm](https://6.docs.plone.org/install/create-project.html#node-js), [Make](https://6.docs.plone.org/install/create-project-cookieplone.html#make), [Git](https://6.docs.plone.org/install/create-project-cookieplone.html#git) and, optionally, [Docker](https://docs.docker.com/get-started/get-docker/).
 
 ```shell
+git clone git@github.com:RegioneER/collective-rercaptcha.git
+cd collective-rercaptcha/frontend
 make install
 ```
 
-### Start developing
-
-Start the backend.
+Start the backend, then the frontend in a separate terminal:
 
 ```shell
 make backend-docker-start
-```
-
-In a separate terminal session, start the frontend.
-
-```shell
 make start
 ```
 
-### Lint code
+Other useful commands (run `make help` for the full list):
 
-Run ESlint, Prettier, and Stylelint in analyze mode.
+| Command | Description |
+| --- | --- |
+| `make lint` | Run ESLint, Prettier and Stylelint in check mode |
+| `make format` | Run ESLint, Prettier and Stylelint in fix mode |
+| `make i18n` | Extract the messages to translate into `locales` |
+| `make test` | Run the unit tests |
 
-```shell
-make lint
-```
+## Credits
 
-### Format code
+Developed with the support of [Regione Emilia-Romagna](https://www.regione.emilia-romagna.it/), which supports the [PloneGov initiative](https://www.plonegov.it/).
 
-Run ESlint, Prettier, and Stylelint in fix mode.
-
-```shell
-make format
-```
-
-### i18n
-
-Extract the i18n messages to locales.
-
-```shell
-make i18n
-```
-
-### Unit tests
-
-Run unit tests.
-
-```shell
-make test
-```
-
-### Run Cypress tests
-
-Run each of these steps in separate terminal sessions.
-
-In the first session, start the frontend in development mode.
-
-```shell
-make acceptance-frontend-dev-start
-```
-
-In the second session, start the backend acceptance server.
-
-```shell
-make acceptance-backend-start
-```
-
-In the third session, start the Cypress interactive test runner.
-
-```shell
-make acceptance-test
-```
+This product was developed by the [RedTurtle Technology](https://www.redturtle.it/) team.
 
 ## License
 
-The project is licensed under the MIT license.
+This package is licensed under the [MIT license](https://opensource.org/licenses/MIT).

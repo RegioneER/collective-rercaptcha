@@ -7,6 +7,30 @@
 -->
 
 <!-- towncrier release notes start -->
+## 1.0.0a32 (2026-11-03)
+
+### Backend
+
+No significant changes.
+
+
+
+
+### Frontend
+
+#### Bugfix
+
+- Don't override the site language settings (`isMultilingual`, `supportedLanguages`, `defaultLanguage`): the cookieplone boilerplate forced English as default language on every site using the add-on. @giulio-red-turtle 
+
+
+
+### Project
+
+No significant changes.
+
+
+
+
 ## 1.0.0a31 (2026-09-18)
 
 ### Backend

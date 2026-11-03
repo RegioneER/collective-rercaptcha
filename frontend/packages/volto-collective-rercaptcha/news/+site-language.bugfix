@@ -1,0 +1,1 @@
+Don't override the site language settings (`isMultilingual`, `supportedLanguages`, `defaultLanguage`): the cookieplone boilerplate forced English as default language on every site using the add-on. @giulio-red-turtle

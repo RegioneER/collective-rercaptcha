@@ -6,3 +6,4 @@ node_modules
 *.mo
 venv
 .vscode
+.claude/settings.json
